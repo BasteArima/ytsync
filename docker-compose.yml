@@ -1,0 +1,28 @@
+# Готовый образ из GHCR — собирать локально не нужно.
+# Обновление:  docker compose pull && docker compose up -d
+services:
+  ytsync:
+    image: ghcr.io/bastearima/ytsync:latest
+    container_name: ytsync
+    restart: unless-stopped
+
+    # UID:GID, под которым пишутся файлы. Поставь тот же, что у твоего
+    # медиасервера, иначе он не прочитает скачанное.
+    user: "1000:1000"
+
+    ports:
+      - "8099:8099"
+
+    environment:
+      # Планировщик считает часы по локальному времени контейнера
+      TZ: "Europe/Moscow"
+
+    volumes:
+      # Корень загрузок: подпапки внутри = плейлисты.
+      # Существующие archive.txt используются как есть, ничего не перекачивается.
+      - /srv/media/YouTube:/media
+      # Конфиг, база истории, куки и хеш пароля
+      - ytsync_config:/config
+
+volumes:
+  ytsync_config:

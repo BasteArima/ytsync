@@ -1,0 +1,5 @@
+flask>=3.0,<4
+waitress>=3.0,<4
+# [default] тянет yt-dlp-ejs — скрипты решения JS-задач YouTube.
+# Без него JS-движок бесполезен: n challenge не решается.
+yt-dlp[default]

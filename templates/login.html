@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="ru">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ytsync — вход</title>
+<link rel="stylesheet" href="/static/fonts.css">
+<style>
+  :root{color-scheme:light;
+        --paper:#f4f6f8;--surface:#fff;--ink:#14181d;--mut:#6d7681;--line:#dde2e8;
+        --line2:#c6ced6;--run:#2f6fd0;--bad:#b03a30;--sunk:#eaeef2}
+  @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;
+    --paper:#0b0e12;--surface:#181d24;--ink:#e9edf1;--mut:#8d97a3;--line:#2b323b;
+    --line2:#3b444f;--run:#74a9f2;--bad:#ef7f74;--sunk:#212831}}
+  :root[data-theme="dark"]{color-scheme:dark;
+    --paper:#0b0e12;--surface:#181d24;--ink:#e9edf1;--mut:#8d97a3;
+    --line:#2b323b;--line2:#3b444f;--run:#74a9f2;--bad:#ef7f74;--sunk:#212831}
+  *{box-sizing:border-box}
+  body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
+       background:var(--paper);color:var(--ink);padding:24px;
+       font:14.5px/1.5 "IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+       -webkit-font-smoothing:antialiased}
+  .box{background:var(--surface);border:1px solid var(--line);border-radius:13px;
+       padding:26px 26px 22px;width:100%;max-width:390px}
+  h1{font-size:19px;margin:0 0 6px;letter-spacing:-.01em}
+  p{margin:0 0 18px;color:var(--mut);font-size:13.5px}
+  label{display:block;font-size:12.5px;color:var(--mut);margin:0 0 5px}
+  input{width:100%;font:inherit;padding:9px 11px;border-radius:9px;
+        border:1px solid var(--line2);background:var(--paper);color:var(--ink)}
+  input:focus{outline:2px solid var(--run);outline-offset:1px;border-color:var(--run)}
+  button{width:100%;margin-top:14px;font:inherit;font-weight:600;padding:9px;
+         border-radius:9px;border:1px solid var(--run);background:var(--run);color:#fff;
+         cursor:pointer}
+  button:disabled{opacity:.5;cursor:default}
+  .err{color:var(--bad);font-size:13px;margin-top:11px;min-height:18px}
+  .note{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+        font-size:12px;color:var(--mut)}
+  .field+.field{margin-top:12px}
+</style>
+</head>
+<body>
+<form class="box" id="f">
+  {% if setup %}
+    <h1>Задайте пароль</h1>
+    <p>Это первый запуск. Пароль сохранится в виде хеша — восстановить его будет нельзя,
+       только сбросить, удалив файл на сервере.</p>
+    <div class="field">
+      <label for="p">Пароль администратора</label>
+      <input id="p" type="password" autocomplete="new-password" minlength="6" required autofocus>
+    </div>
+    <div class="field">
+      <label for="p2">Повторите пароль</label>
+      <input id="p2" type="password" autocomplete="new-password" minlength="6" required>
+    </div>
+    <button type="submit">Сохранить и войти</button>
+  {% else %}
+    <h1>ytsync</h1>
+    <p>Введите пароль. Браузер запомнит вход на полгода.</p>
+    <div class="field">
+      <label for="p">Пароль</label>
+      <input id="p" type="password" autocomplete="current-password" required autofocus>
+    </div>
+    <button type="submit">Войти</button>
+  {% endif %}
+  <div class="err" id="err"></div>
+  <div class="note">Доступ только по локальной сети. Соединение не шифруется,
+    поэтому пароль стоит держать отличным от других.</div>
+</form>
+
+<script>
+  const SETUP = {{ 'true' if setup else 'false' }};
+  const f = document.getElementById("f"), err = document.getElementById("err");
+  f.addEventListener("submit", async e => {
+    e.preventDefault();
+    err.textContent = "";
+    const pw = document.getElementById("p").value;
+    if (SETUP) {
+      const p2 = document.getElementById("p2").value;
+      if (pw !== p2) { err.textContent = "Пароли не совпадают"; return; }
+      if (pw.length < 6) { err.textContent = "Не короче 6 символов"; return; }
+    }
+    const btn = f.querySelector("button");
+    btn.disabled = true;
+    try {
+      const r = await fetch(SETUP ? "/api/auth/setup" : "/api/auth/login", {
+        method: "POST", headers: {"Content-Type": "application/json"},
+        body: JSON.stringify({password: pw})
+      });
+      const d = await r.json().catch(() => ({}));
+      if (!r.ok) { err.textContent = d.error || "Не удалось войти"; btn.disabled = false; return; }
+      location.href = "/";
+    } catch (e2) {
+      err.textContent = "Сервер не отвечает";
+      btn.disabled = false;
+    }
+  });
+</script>
+</body>
+</html>

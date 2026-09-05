@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Локальные данные при запуске из исходников
+config/
+media/
+*.db
+*.sqlite3
+
+.DS_Store
+.idea/
+.vscode/
