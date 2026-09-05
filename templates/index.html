@@ -39,8 +39,8 @@ body{margin:0;background:var(--paper);color:var(--ink);
 .wrap{max-width:1180px;margin:0 auto;padding:18px 16px 60px}
 .grow{flex:1}
 .appbar{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
-.brand{font-weight:700;font-size:17px;letter-spacing:-.01em}
-.statusline{font-size:12.5px;color:var(--mut);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.brand{font-weight:700;font-size:18px;letter-spacing:-.01em}
+.statusline{font-size:13px;color:var(--mut);display:flex;gap:8px;flex-wrap:wrap;align-items:center}
 .statusline b{color:var(--ink);font-weight:600}
 .sep{color:var(--line2)}
 button{font:inherit;font-size:13.5px;padding:7px 13px;border-radius:8px;cursor:pointer;
@@ -51,7 +51,7 @@ button:disabled{opacity:.42;cursor:not-allowed}
 button.primary{background:var(--run);border-color:var(--run);color:#fff}
 button.danger{color:var(--bad)}
 button.sm{font-size:12.5px;padding:5px 10px}
-input,select,textarea{font:inherit;font-size:13px;padding:6px 10px;border-radius:8px;
+input,select,textarea{font:inherit;font-size:13.5px;padding:6px 10px;border-radius:8px;
   border:1px solid var(--line2);background:var(--paper);color:var(--ink)}
 input:focus,select:focus,textarea:focus{outline:2px solid var(--run);outline-offset:1px}
 input[type=text],input[type=password]{min-width:170px}
@@ -66,21 +66,21 @@ input[type=text],input[type=password]{min-width:170px}
 @keyframes pl{0%,100%{opacity:1}50%{opacity:.25}}
 @media (prefers-reduced-motion:reduce){.pulse{animation:none}}
 .banner{border:1px solid var(--warn);background:var(--warnbg);color:var(--warn);
-        border-radius:10px;padding:9px 13px;margin-bottom:10px;font-size:13px}
+        border-radius:10px;padding:9px 13px;margin-bottom:10px;font-size:13.5px}
 .runbar{border:1px solid var(--run);background:var(--runbg);border-radius:11px;
         padding:12px 14px;display:flex;flex-direction:column;gap:9px;margin-bottom:14px}
 .runtop{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.runfile{font-size:12.5px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.runfile{font-size:13px;color:var(--ink2);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .prog{height:5px;border-radius:99px;background:var(--surface);overflow:hidden}
 .prog i{display:block;height:100%;background:var(--run);transition:width .3s}
-.queue{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12px;color:var(--mut)}
+.queue{display:flex;gap:6px;align-items:center;flex-wrap:wrap;font-size:12.5px;color:var(--mut)}
 /* overflow-x:auto по спецификации делает overflow-y вычисляемым как auto,
    отчего сбоку вылезала вертикальная полоса прокрутки. Гасим её явно. */
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:14px 0;
       overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
 .tabs::-webkit-scrollbar{display:none}
 .tabs button{border:0;background:none;color:var(--mut);border-bottom:2px solid transparent;
-  border-radius:0;margin-bottom:-1px;padding:8px 13px;font-size:13.5px;white-space:nowrap}
+  border-radius:0;margin-bottom:-1px;padding:8px 14px;font-size:14px;white-space:nowrap}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--run);font-weight:600}
 .row{display:grid;grid-template-columns:4px 1fr;border:1px solid var(--line);
      border-radius:10px;overflow:hidden;margin-bottom:8px;background:var(--surface);
@@ -105,40 +105,40 @@ input[type=text],input[type=password]{min-width:170px}
   .rmain{grid-template-columns:1fr}
   .racts{justify-self:start}
 }
-/* Закрытые списки стоят в одну строку рядом, раскрытый занимает всю ширину —
-   иначе каждая мелочь съедала бы отдельную строку и карточка росла вчетверо */
+.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;
+      padding:14px 16px;margin-bottom:10px}
+.card h3{margin:0 0 3px;font-size:15px}
+.hint{font-size:13px;color:var(--mut);margin:6px 0}
+.card .hint{margin:0 0 11px}
+.field{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+.field+.field{margin-top:9px}
+label.inl{font-size:13px;color:var(--mut);display:flex;align-items:center;gap:6px}
+details{margin-top:8px}
+summary{cursor:pointer;color:var(--run);font-size:13.5px}
+.scroll{max-height:290px;overflow:auto;margin-top:6px;border:1px solid var(--line);
+        border-radius:8px}
+table{border-collapse:collapse;width:100%}
+td,th{padding:5px 9px;text-align:left;border-bottom:1px solid var(--line);font-size:13px;
+      vertical-align:top}
+th{color:var(--mut);font-weight:500;position:sticky;top:0;background:var(--surface)}
+pre.log{background:var(--sunk);border:1px solid var(--line);border-radius:9px;padding:11px;
+        font-size:12px;margin:0;max-height:460px;overflow:auto;white-space:pre-wrap;
+        word-break:break-word;font-family:"IBM Plex Mono",ui-monospace,Menlo,monospace;
+        color:var(--ink2)}
+/* Закрытые списки стоят в одну строку рядом, раскрытый занимает всю ширину */
 .rdet{grid-column:1/-1;display:flex;gap:8px 18px;flex-wrap:wrap;align-items:baseline;
       margin-top:2px;border-top:1px solid var(--line);padding-top:9px}
 .rdet details{margin:0;flex:0 0 auto}
 .rdet details[open]{flex:1 1 100%;padding-bottom:2px}
-.rdet summary{font-size:12.5px}
-.card{background:var(--surface);border:1px solid var(--line);border-radius:11px;
-      padding:14px 16px;margin-bottom:10px}
-.card h3{margin:0 0 3px;font-size:14px}
-.hint{font-size:12.5px;color:var(--mut);margin:6px 0}
-.card .hint{margin:0 0 11px}
-.field{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-.field+.field{margin-top:9px}
-label.inl{font-size:12.5px;color:var(--mut);display:flex;align-items:center;gap:6px}
-details{margin-top:8px}
-summary{cursor:pointer;color:var(--run);font-size:13px}
-.scroll{max-height:290px;overflow:auto;margin-top:6px;border:1px solid var(--line);
-        border-radius:8px}
-table{border-collapse:collapse;width:100%}
-td,th{padding:5px 9px;text-align:left;border-bottom:1px solid var(--line);font-size:12.5px;
-      vertical-align:top}
-th{color:var(--mut);font-weight:500;position:sticky;top:0;background:var(--surface)}
-pre.log{background:var(--sunk);border:1px solid var(--line);border-radius:9px;padding:11px;
-        font-size:11.5px;margin:0;max-height:460px;overflow:auto;white-space:pre-wrap;
-        word-break:break-word;font-family:ui-monospace,Menlo,monospace;color:var(--ink2)}
+.rdet summary{font-size:13px}
 .rec-item{border:1px solid var(--line);border-radius:9px;padding:10px 12px;margin-bottom:8px;
           background:var(--surface)}
-.rec-file{font-size:12.5px;word-break:break-word;margin-bottom:6px}
-.rec-opt{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;padding:3px 0}
+.rec-file{font-size:13px;word-break:break-word;margin-bottom:6px}
+.rec-opt{display:flex;gap:7px;align-items:flex-start;font-size:13px;padding:3px 0}
 .rec-opt input{min-width:0}
-.score{color:var(--mut);font-size:11.5px}
+.score{color:var(--mut);font-size:12px}
 [hidden]{display:none!important}
-.empty{color:var(--mut);font-size:13.5px;padding:14px 0}
+.empty{color:var(--mut);font-size:14px;padding:14px 0}
 </style>
 </head>
 <body>
@@ -146,75 +146,85 @@ pre.log{background:var(--sunk);border:1px solid var(--line);border-radius:9px;pa
 
   <div class="appbar">
     <span class="brand">ytsync</span>
-    <div class="statusline mono" id="status">загрузка…</div>
+    <div class="statusline mono" id="status"></div>
     <span class="grow"></span>
-    <button id="bIndex">Переиндексировать всё</button>
-    <button class="primary" id="bSync">Синхронизировать всё</button>
-    <button id="bTheme" title="Переключить тему">🌗</button>
-    <button id="bOut" title="Выйти из ytsync в этом браузере">Выход</button>
+    <button id="bIndex" data-i18n="reindex_all"></button>
+    <button class="primary" id="bSync" data-i18n="sync_all"></button>
+    <button id="bOut" data-i18n="logout" data-i18n-title="logout_title"></button>
   </div>
 
   <div id="warn"></div>
   <div id="runbar"></div>
 
   <div class="tabs" role="tablist">
-    <button role="tab" aria-selected="true" data-t="pl">Плейлисты</button>
-    <button role="tab" aria-selected="false" data-t="set">Настройки</button>
-    <button role="tab" aria-selected="false" data-t="ck">Куки</button>
-    <button role="tab" aria-selected="false" data-t="rec">Сверка</button>
-    <button role="tab" aria-selected="false" data-t="log">Журнал</button>
+    <button role="tab" aria-selected="true" data-t="pl" data-i18n="tab_playlists"></button>
+    <button role="tab" aria-selected="false" data-t="set" data-i18n="tab_settings"></button>
+    <button role="tab" aria-selected="false" data-t="ck" data-i18n="tab_cookies"></button>
+    <button role="tab" aria-selected="false" data-t="rec" data-i18n="tab_reconcile"></button>
+    <button role="tab" aria-selected="false" data-t="log" data-i18n="tab_log"></button>
   </div>
 
   <section data-p="pl">
     <div id="cards"></div>
     <div class="card">
-      <h3>Добавить плейлист</h3>
-      <p class="hint">Папка создастся сразу вместе с пустым archive.txt. Укажешь существующую —
-        её архив подхватится, и уже скачанное не пойдёт заново.</p>
+      <h3 data-i18n="add_title"></h3>
+      <p class="hint" data-i18n="add_hint"></p>
       <form class="field" id="fAdd">
-        <input type="text" id="aUrl" placeholder="ссылка на плейлист" required>
-        <input type="text" id="aFolder" list="folders" placeholder="папка" required
+        <input type="text" id="aUrl" data-i18n-ph="add_url" required>
+        <input type="text" id="aFolder" list="folders" data-i18n-ph="add_folder" required
                style="min-width:140px">
         <datalist id="folders"></datalist>
-        <input type="text" id="aName" placeholder="название" style="min-width:130px">
-        <button class="primary" type="submit">Добавить</button>
+        <input type="text" id="aName" data-i18n-ph="add_name" style="min-width:130px">
+        <button class="primary" type="submit" data-i18n="add_btn"></button>
       </form>
     </div>
   </section>
 
   <section data-p="set" hidden>
     <div class="card">
-      <h3>Загрузка</h3>
-      <p class="hint">Качество максимальное: пустое поле формата означает лучшее видео плюс
-        лучший звук. Склейка идёт в mkv без перекодирования, процессор не нагружается.</p>
+      <h3 data-i18n="dl_title"></h3>
+      <p class="hint" data-i18n="dl_hint"></p>
       <form id="fCfg">
         <div class="field">
-          <label class="inl">Часы запуска <input type="text" id="cHours" style="width:80px"></label>
-          <label class="inl">Тихие часы <input type="text" id="cQuiet" style="width:110px"
-                 placeholder="напр. 9,10,11"></label>
-          <label class="inl">Не качать, если свободно меньше
-            <input type="number" id="cFree" min="0" step="1" style="width:74px"> ГБ</label>
+          <label class="inl"><span data-i18n="cfg_hours"></span>
+            <input type="text" id="cHours" style="width:80px"></label>
+          <label class="inl"><span data-i18n="cfg_quiet"></span>
+            <input type="text" id="cQuiet" style="width:110px" data-i18n-ph="cfg_quiet_ph"></label>
+          <label class="inl"><span data-i18n="cfg_free"></span>
+            <input type="number" id="cFree" min="0" step="1" style="width:74px"> GB</label>
         </div>
         <div class="field">
-          <label class="inl">Ограничение скорости
-            <input type="text" id="cRate" placeholder="напр. 5M" style="min-width:100px"></label>
-          <label class="inl">Формат
-            <input type="text" id="cFmt" placeholder="пусто = лучшее" style="min-width:170px"></label>
+          <label class="inl"><span data-i18n="cfg_rate"></span>
+            <input type="text" id="cRate" data-i18n-ph="cfg_rate_ph" style="min-width:100px"></label>
+          <label class="inl"><span data-i18n="cfg_format"></span>
+            <input type="text" id="cFmt" data-i18n-ph="cfg_format_ph" style="min-width:170px"></label>
         </div>
         <div class="field">
-          <label class="inl">Шаблон имени
+          <label class="inl"><span data-i18n="cfg_tpl"></span>
             <input type="text" id="cTpl" style="min-width:320px"></label>
-          <label class="inl"><input type="checkbox" id="cThumb"> сохранять обложки</label>
-          <button class="primary" type="submit">Сохранить</button>
+          <label class="inl"><input type="checkbox" id="cThumb">
+            <span data-i18n="cfg_thumbs"></span></label>
+          <button class="primary" type="submit" data-i18n="save"></button>
         </div>
       </form>
     </div>
+
     <div class="card">
-      <h3>Вид</h3>
-      <p class="hint">Масштаб хранится в браузере, на каждом устройстве свой —
-        на сервер не отправляется.</p>
+      <h3 data-i18n="view_title"></h3>
+      <p class="hint" data-i18n="view_hint"></p>
       <div class="field">
-        <label class="inl">Масштаб интерфейса
+        <label class="inl"><span data-i18n="view_lang"></span>
+          <select id="cLang">
+            <option value="ru">Русский</option>
+            <option value="en">English</option>
+          </select></label>
+        <label class="inl"><span data-i18n="view_theme"></span>
+          <select id="cTheme">
+            <option value="auto" data-i18n="theme_auto"></option>
+            <option value="light" data-i18n="theme_light"></option>
+            <option value="dark" data-i18n="theme_dark"></option>
+          </select></label>
+        <label class="inl"><span data-i18n="view_zoom"></span>
           <select id="cZoom">
             <option value="0.9">90%</option>
             <option value="1">100%</option>
@@ -225,81 +235,236 @@ pre.log{background:var(--sunk);border:1px solid var(--line);border-radius:9px;pa
           </select></label>
       </div>
     </div>
+
     <div class="card">
-      <h3>Доступ</h3>
-      <p class="hint">Вход запоминается в этом браузере на полгода. Сброс сессий разлогинит
-        все устройства, включая это.</p>
+      <h3 data-i18n="acc_title"></h3>
+      <p class="hint" data-i18n="acc_hint"></p>
       <form class="field" id="fPw">
-        <input type="password" id="pwOld" placeholder="текущий пароль" autocomplete="current-password" required>
-        <input type="password" id="pwNew" placeholder="новый пароль" autocomplete="new-password" minlength="6" required>
-        <button type="submit">Сменить пароль</button>
-        <button type="button" class="danger" id="bRevoke">Выйти на всех устройствах</button>
+        <input type="password" id="pwOld" data-i18n-ph="acc_current"
+               autocomplete="current-password" required>
+        <input type="password" id="pwNew" data-i18n-ph="acc_new"
+               autocomplete="new-password" minlength="6" required>
+        <button type="submit" data-i18n="acc_change"></button>
+        <button type="button" class="danger" id="bRevoke" data-i18n="acc_revoke"></button>
       </form>
     </div>
   </section>
 
   <section data-p="ck" hidden>
     <div class="card">
-      <div class="field"><h3 style="margin:0">Куки YouTube</h3><span class="grow"></span>
-        <span id="cookState" class="chip">…</span></div>
-      <p class="hint" style="margin-top:9px">Нужны только для приватных плейлистов и видео 18+.
-        Для обычных ссылок не требуются. Формат — Netscape cookies.txt. Всё, что не относится
-        к YouTube и Google, отбрасывается при загрузке. Файл лежит с правами 600 и обратно
-        не читается.</p>
+      <div class="field"><h3 style="margin:0" data-i18n="ck_title"></h3><span class="grow"></span>
+        <span id="cookState" class="chip"></span></div>
+      <p class="hint" style="margin-top:9px" data-i18n="ck_hint"></p>
       <form class="field" id="fCook">
         <input type="file" id="kFile" accept=".txt,text/plain">
-        <button class="primary" type="submit">Загрузить</button>
-        <button type="button" class="danger" id="kDel">Удалить</button>
+        <button class="primary" type="submit" data-i18n="ck_upload"></button>
+        <button type="button" class="danger" id="kDel" data-i18n="delete"></button>
       </form>
       <details>
-        <summary>Вставить текстом</summary>
-        <p class="hint" style="margin:6px 0">Через буфер табуляции часто ломаются — если
-          ругнётся на формат, грузи файлом.</p>
-        <textarea id="kText" rows="5" style="width:100%;font-family:ui-monospace,monospace"></textarea>
-        <button id="kPaste" style="margin-top:6px">Сохранить текст</button>
+        <summary data-i18n="ck_paste"></summary>
+        <p class="hint" style="margin:6px 0" data-i18n="ck_paste_hint"></p>
+        <textarea id="kText" rows="5"
+                  style="width:100%;font-family:'IBM Plex Mono',ui-monospace,monospace"></textarea>
+        <button id="kPaste" style="margin-top:6px" data-i18n="ck_paste_save"></button>
       </details>
     </div>
   </section>
 
   <section data-p="rec" hidden>
     <div class="card">
-      <h3>Сверка файлов без ID</h3>
-      <p class="hint">У части файлов в имени нет ID видео, поэтому сопоставить их автоматически
-        нельзя — для YouTube нет базы хешей. Здесь подбираются похожие по названию, решение
-        за тобой. Подтверждённые ID дописываются в archive.txt, и эти видео больше не скачаются.</p>
+      <h3 data-i18n="rec_title"></h3>
+      <p class="hint" data-i18n="rec_hint"></p>
       <div class="field">
         <select id="recFolder"></select>
-        <button id="recLoad">Подобрать</button>
+        <button id="recLoad" data-i18n="rec_load"></button>
         <span class="grow"></span>
-        <button class="primary" id="recApply" disabled>Подтвердить выбранные</button>
+        <button class="primary" id="recApply" disabled data-i18n="rec_apply"></button>
       </div>
-      <div id="recBody" class="empty">Выбери папку и нажми «Подобрать».</div>
+      <div id="recBody" class="empty" data-i18n="rec_empty"></div>
     </div>
   </section>
 
   <section data-p="log" hidden>
     <div class="card">
-      <div class="field"><h3 style="margin:0">Журнал</h3><span class="grow"></span>
-        <label class="inl"><input type="checkbox" id="lAuto" checked> автообновление</label>
-        <button id="bLog">Обновить</button></div>
-      <pre class="log" id="log" style="margin-top:10px">…</pre>
+      <div class="field"><h3 style="margin:0" data-i18n="log_title"></h3><span class="grow"></span>
+        <label class="inl"><input type="checkbox" id="lAuto" checked>
+          <span data-i18n="log_auto"></span></label>
+        <button id="bLog" data-i18n="refresh"></button></div>
+      <pre class="log" id="log" style="margin-top:10px"></pre>
     </div>
   </section>
 </div>
 
 <script>
+/* =================== локализация =================== */
+const I18N = {
+ru: {
+  reindex_all:"Переиндексировать всё", sync_all:"Синхронизировать всё",
+  logout:"Выход", logout_title:"Выйти из ytsync в этом браузере",
+  tab_playlists:"Плейлисты", tab_settings:"Настройки", tab_cookies:"Куки",
+  tab_reconcile:"Сверка", tab_log:"Журнал",
+  add_title:"Добавить плейлист",
+  add_hint:"Папка создастся сразу вместе с пустым archive.txt. Укажешь существующую — её архив подхватится, и уже скачанное не пойдёт заново.",
+  add_url:"ссылка на плейлист", add_folder:"папка", add_name:"название", add_btn:"Добавить",
+  dl_title:"Загрузка",
+  dl_hint:"Качество максимальное: пустое поле формата означает лучшее видео плюс лучший звук. Склейка идёт в mkv без перекодирования, процессор не нагружается.",
+  cfg_hours:"Часы запуска", cfg_quiet:"Тихие часы", cfg_quiet_ph:"напр. 9,10,11",
+  cfg_free:"Не качать, если свободно меньше", cfg_rate:"Ограничение скорости",
+  cfg_rate_ph:"напр. 5M", cfg_format:"Формат", cfg_format_ph:"пусто = лучшее",
+  cfg_tpl:"Шаблон имени", cfg_thumbs:"сохранять обложки", save:"Сохранить",
+  view_title:"Вид", view_hint:"Язык, тема и масштаб хранятся в браузере, на каждом устройстве свои — на сервер не отправляются.",
+  view_lang:"Язык", view_theme:"Тема", view_zoom:"Масштаб интерфейса",
+  theme_auto:"Как в системе", theme_light:"Светлая", theme_dark:"Тёмная",
+  acc_title:"Доступ",
+  acc_hint:"Вход запоминается в этом браузере на полгода. Сброс сессий разлогинит все устройства, включая это.",
+  acc_current:"текущий пароль", acc_new:"новый пароль", acc_change:"Сменить пароль",
+  acc_revoke:"Выйти на всех устройствах",
+  ck_title:"Куки YouTube",
+  ck_hint:"Нужны только для приватных плейлистов и видео 18+. Для обычных ссылок не требуются. Формат — Netscape cookies.txt. Всё, что не относится к YouTube и Google, отбрасывается при загрузке. Файл лежит с правами 600 и обратно не читается.",
+  ck_upload:"Загрузить", delete:"Удалить", ck_paste:"Вставить текстом",
+  ck_paste_hint:"Через буфер табуляции часто ломаются — если ругнётся на формат, грузи файлом.",
+  ck_paste_save:"Сохранить текст", ck_none:"не загружены", ck_count:"{n} кук",
+  rec_title:"Сверка файлов без ID",
+  rec_hint:"У части файлов в имени нет ID видео, поэтому сопоставить их автоматически нельзя — для YouTube нет базы хешей. Здесь подбираются похожие по названию, решение за тобой. Подтверждённые ID дописываются в archive.txt, и эти видео больше не скачаются.",
+  rec_load:"Подобрать", rec_apply:"Подтвердить выбранные",
+  rec_empty:"Выбери папку и нажми «Подобрать».", rec_working:"Подбираю…",
+  rec_none:"Файлов без ID в этой папке нет.", rec_nomatch:"Похожих не нашлось.",
+  rec_skip:"пропустить", rec_notin:"нет в плейлисте", rec_nothing:"Ничего не выбрано.",
+  rec_confirm:"Дописать {n} ID в archive.txt?\n\nЭти видео больше не будут скачиваться.",
+  rec_added:"Добавлено записей: {n}", rec_folder_opt:"{name} (без ID: {n})",
+  log_title:"Журнал", log_auto:"автообновление", refresh:"Обновить", log_empty:"пусто",
+  st_schedule:"расписание", st_off:"выкл", st_disk:"диск", st_of:"из", st_used:"занято",
+  st_quiet:"тихие часы",
+  run_sync:"Синк", run_index:"Индекс", run_unqueue:"Убрать из очереди", run_del:"Убрать",
+  b_pause:"Пауза", b_stop:"Остановить", b_stop_title:"Недокачанный файл сохранится и продолжится позже",
+  q_next:"Дальше:", q_inq:"В очереди:", q_clear:"Очистить очередь",
+  badge_running:"идёт синк", badge_queued:"в очереди", badge_noindex:"не индексирован",
+  size_unknown:"объём неизвестен",
+  n_total:"всего", n_done:"скачано", n_pending:"в очереди", n_rescued:"спасено",
+  n_lost:"упущено", n_noid:"без ID",
+  d_pending:"В очереди на скачивание — {n}", d_pending_hint:"Доступны на YouTube, локально их пока нет.",
+  d_rescued:"Спасено — {n}", d_rescued_hint:"На YouTube уже не посмотреть, а у тебя лежит.",
+  d_lost:"Упущено — {n}", d_lost_hint:"Недоступно на YouTube и не скачано. Часть бывает чинибельной — попробуй «Повторить упущенные».",
+  d_retry:"Повторить упущенные ({n})",
+  d_orph:"Файлы без ID в имени — {n}", d_orph_hint:"Сопоставить автоматически нельзя — вкладка «Сверка».",
+  loading:"загружаю…", empty:"пусто",
+  th_id:"ID", th_title:"Название", th_reason:"Причина", reason_gone:"нет в плейлисте",
+  file_of:"файл {a} из {b}",
+  meta_checked:"проверен {t}", meta_added:"в прошлый раз скачано {n}",
+  no_playlists:"Плейлистов пока нет. Добавь первый ниже — он сразу проиндексируется, но качать ничего не начнёт.",
+  c_del:"Убрать «{f}» из списка?\n\nФайлы и archive.txt останутся на месте — удаляется только запись.",
+  c_sync:"Скачать {n} видео, примерно {gb} ГБ?\n\nСвободно {free} ГБ.",
+  c_sync_all:"Синхронизировать все плейлисты?\n\nПримерно {gb} ГБ к загрузке, свободно {free} ГБ.",
+  c_logout:"Выйти из ytsync в этом браузере?",
+  c_revoke:"Разлогинить все устройства, включая это?",
+  c_ckdel:"Удалить файл кук с сервера?",
+  a_pw_ok:"Пароль изменён. Этот браузер остался в системе.",
+  a_add_new:"Папка создана, archive.txt пустой — при первом синке скачается весь плейлист.",
+  a_add_old:"Использую существующий archive.txt: {n} записей, они не перекачаются.",
+  a_ck_ok:"Сохранено {n} кук для {d}.", a_ck_drop:"\n\nОтброшено посторонних: {n}",
+  a_pick_file:"Выбери файл", a_empty:"Пусто",
+  e_auth:"нужен вход", e_generic:"ошибка", ago_never:"ни разу", ago_now:"только что",
+  ago_min:"{n} мин назад", ago_h:"{n} ч назад", ago_d:"{n} дн назад",
+},
+en: {
+  reindex_all:"Reindex all", sync_all:"Sync all",
+  logout:"Log out", logout_title:"Log out of ytsync in this browser",
+  tab_playlists:"Playlists", tab_settings:"Settings", tab_cookies:"Cookies",
+  tab_reconcile:"Reconcile", tab_log:"Log",
+  add_title:"Add a playlist",
+  add_hint:"The folder is created right away together with an empty archive.txt. Point it at an existing folder and its archive is reused, so nothing is downloaded twice.",
+  add_url:"playlist URL", add_folder:"folder", add_name:"name", add_btn:"Add",
+  dl_title:"Downloading",
+  dl_hint:"Quality is the best available: an empty format field means best video plus best audio. Files are merged into mkv without re-encoding, so the CPU stays idle.",
+  cfg_hours:"Run at hours", cfg_quiet:"Quiet hours", cfg_quiet_ph:"e.g. 9,10,11",
+  cfg_free:"Skip if free space below", cfg_rate:"Rate limit",
+  cfg_rate_ph:"e.g. 5M", cfg_format:"Format", cfg_format_ph:"empty = best",
+  cfg_tpl:"Filename template", cfg_thumbs:"save thumbnails", save:"Save",
+  view_title:"Appearance", view_hint:"Language, theme and scale are stored in your browser, separately per device — they are never sent to the server.",
+  view_lang:"Language", view_theme:"Theme", view_zoom:"Interface scale",
+  theme_auto:"Match system", theme_light:"Light", theme_dark:"Dark",
+  acc_title:"Access",
+  acc_hint:"Your login is remembered in this browser for six months. Revoking sessions signs out every device, including this one.",
+  acc_current:"current password", acc_new:"new password", acc_change:"Change password",
+  acc_revoke:"Sign out everywhere",
+  ck_title:"YouTube cookies",
+  ck_hint:"Only needed for private playlists and age-restricted videos; ordinary links work without them. Format is Netscape cookies.txt. Everything outside YouTube and Google domains is stripped on upload. The file is stored with 0600 permissions and is never read back.",
+  ck_upload:"Upload", delete:"Delete", ck_paste:"Paste as text",
+  ck_paste_hint:"Tabs often break when copying through the clipboard — if the format is rejected, upload the file instead.",
+  ck_paste_save:"Save text", ck_none:"not loaded", ck_count:"{n} cookies",
+  rec_title:"Reconcile files without IDs",
+  rec_hint:"Some filenames carry no video ID, so they cannot be matched automatically — there is no hash registry for YouTube. Similar titles are suggested here and you decide. Confirmed IDs are appended to archive.txt so those videos are never downloaded again.",
+  rec_load:"Find matches", rec_apply:"Confirm selected",
+  rec_empty:"Pick a folder and press “Find matches”.", rec_working:"Matching…",
+  rec_none:"No files without IDs in this folder.", rec_nomatch:"No similar titles found.",
+  rec_skip:"skip", rec_notin:"not in playlist", rec_nothing:"Nothing selected.",
+  rec_confirm:"Append {n} IDs to archive.txt?\n\nThese videos will never be downloaded again.",
+  rec_added:"Entries added: {n}", rec_folder_opt:"{name} (no ID: {n})",
+  log_title:"Log", log_auto:"auto-refresh", refresh:"Refresh", log_empty:"empty",
+  st_schedule:"schedule", st_off:"off", st_disk:"disk", st_of:"of", st_used:"used",
+  st_quiet:"quiet hours",
+  run_sync:"Sync", run_index:"Index", run_unqueue:"Remove from queue", run_del:"Remove",
+  b_pause:"Pause", b_stop:"Stop", b_stop_title:"The partial file is kept and resumes later",
+  q_next:"Next:", q_inq:"Queued:", q_clear:"Clear queue",
+  badge_running:"syncing", badge_queued:"queued", badge_noindex:"not indexed",
+  size_unknown:"size unknown",
+  n_total:"total", n_done:"downloaded", n_pending:"queued", n_rescued:"rescued",
+  n_lost:"missed", n_noid:"no ID",
+  d_pending:"Queued for download — {n}", d_pending_hint:"Available on YouTube, not on your disk yet.",
+  d_rescued:"Rescued — {n}", d_rescued_hint:"No longer watchable on YouTube, but you have it.",
+  d_lost:"Missed — {n}", d_lost_hint:"Unavailable on YouTube and not downloaded. Some of these are recoverable — try “Retry missed”.",
+  d_retry:"Retry missed ({n})",
+  d_orph:"Files without an ID — {n}", d_orph_hint:"Cannot be matched automatically — see the Reconcile tab.",
+  loading:"loading…", empty:"empty",
+  th_id:"ID", th_title:"Title", th_reason:"Reason", reason_gone:"not in playlist",
+  file_of:"file {a} of {b}",
+  meta_checked:"checked {t}", meta_added:"last run downloaded {n}",
+  no_playlists:"No playlists yet. Add one below — it is indexed immediately but nothing is downloaded until you press Sync.",
+  c_del:"Remove “{f}” from the list?\n\nFiles and archive.txt stay untouched — only the entry is deleted.",
+  c_sync:"Download {n} videos, roughly {gb} GB?\n\n{free} GB free.",
+  c_sync_all:"Sync every playlist?\n\nRoughly {gb} GB to download, {free} GB free.",
+  c_logout:"Log out of ytsync in this browser?",
+  c_revoke:"Sign out every device, including this one?",
+  c_ckdel:"Delete the cookie file from the server?",
+  a_pw_ok:"Password changed. This browser stays signed in.",
+  a_add_new:"Folder created with an empty archive.txt — the first sync will fetch the whole playlist.",
+  a_add_old:"Reusing the existing archive.txt: {n} entries, they will not be downloaded again.",
+  a_ck_ok:"Saved {n} cookies for {d}.", a_ck_drop:"\n\nUnrelated cookies dropped: {n}",
+  a_pick_file:"Pick a file", a_empty:"Empty",
+  e_auth:"login required", e_generic:"error", ago_never:"never", ago_now:"just now",
+  ago_min:"{n} min ago", ago_h:"{n} h ago", ago_d:"{n} d ago",
+}};
+
+let lang = "ru";
+try { lang = localStorage.getItem("ytsync-lang")
+      || ((navigator.language || "").toLowerCase().startsWith("ru") ? "ru" : "en"); } catch(e) {}
+
+function t(key, vars) {
+  let s = (I18N[lang] && I18N[lang][key]) ?? I18N.ru[key] ?? key;
+  if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]);
+  return s;
+}
+function applyStatic() {
+  document.documentElement.lang = lang;
+  document.querySelectorAll("[data-i18n]").forEach(el => el.textContent = t(el.dataset.i18n));
+  document.querySelectorAll("[data-i18n-ph]").forEach(el => el.placeholder = t(el.dataset.i18nPh));
+  document.querySelectorAll("[data-i18n-title]").forEach(el => el.title = t(el.dataset.i18nTitle));
+}
+const loc = () => lang === "ru" ? "ru-RU" : "en-GB";
+
+/* =================== вспомогательное =================== */
 const $ = s => document.querySelector(s);
 const esc = s => String(s ?? "").replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
-const dt = s => s ? new Date(s).toLocaleString("ru-RU") : "—";
+const dt = s => s ? new Date(s).toLocaleString(loc()) : "—";
 function ago(s) {
-  if (!s) return "ни разу";
+  if (!s) return t("ago_never");
   const m = Math.round((Date.now() - new Date(s)) / 60000);
-  if (m < 1) return "только что";
-  if (m < 60) return `${m} мин назад`;
+  if (m < 1) return t("ago_now");
+  if (m < 60) return t("ago_min", {n:m});
   const h = Math.round(m / 60);
-  if (h < 24) return `${h} ч назад`;
+  if (h < 24) return t("ago_h", {n:h});
   const d = Math.round(h / 24);
-  return d < 30 ? `${d} дн назад` : new Date(s).toLocaleDateString("ru-RU");
+  return d < 30 ? t("ago_d", {n:d}) : new Date(s).toLocaleDateString(loc());
 }
 let STATE = null, busy = false;
 // Раскрыт всегда не более одного списка. Ключ хранится отдельно от разметки,
@@ -310,52 +475,52 @@ let cardsSig = "";
 
 async function api(url, opt) {
   const r = await fetch(url, opt);
-  if (r.status === 401) { location.href = "/login"; throw new Error("нужен вход"); }
+  if (r.status === 401) { location.href = "/login"; throw new Error(t("e_auth")); }
   const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d.error || d.message || "ошибка");
+  if (!r.ok) throw new Error(d.error || d.message || t("e_generic"));
   return d;
 }
 
-/* ---------------- тема ---------------- */
-const TH = [["auto","🌗"],["light","☀️"],["dark","🌙"]];
-let ti = 0;
-try { const s = localStorage.getItem("ytsync-theme");
-      if (s) ti = Math.max(0, TH.findIndex(t => t[0] === s)); } catch(e) {}
-function paintTheme() {
-  const [v, l] = TH[ti];
+/* =================== вид: язык, тема, масштаб =================== */
+function applyTheme(v) {
   if (v === "auto") document.documentElement.removeAttribute("data-theme");
   else document.documentElement.setAttribute("data-theme", v);
-  $("#bTheme").textContent = l;
   try { localStorage.setItem("ytsync-theme", v); } catch(e) {}
 }
-$("#bTheme").onclick = () => { ti = (ti + 1) % TH.length; paintTheme(); };
-paintTheme();
-
-/* ---------------- масштаб интерфейса ---------------- */
 function applyZoom(v) {
   document.documentElement.style.setProperty("--ui-zoom", v);
   try { localStorage.setItem("ytsync-zoom", v); } catch(e) {}
 }
-let zoom = "1";
-try { zoom = localStorage.getItem("ytsync-zoom") || "1"; } catch(e) {}
-applyZoom(zoom);
-$("#cZoom").value = zoom;
+let theme = "auto", zoom = "1";
+try { theme = localStorage.getItem("ytsync-theme") || "auto";
+      zoom = localStorage.getItem("ytsync-zoom") || "1"; } catch(e) {}
+applyTheme(theme); applyZoom(zoom); applyStatic();
+$("#cTheme").value = theme; $("#cZoom").value = zoom; $("#cLang").value = lang;
+$("#cTheme").onchange = e => applyTheme(e.target.value);
 $("#cZoom").onchange = e => applyZoom(e.target.value);
+$("#cLang").onchange = e => {
+  lang = e.target.value;
+  try { localStorage.setItem("ytsync-lang", lang); } catch(err) {}
+  applyStatic();
+  cardsSig = "";                       // подписи в карточках тоже переводятся
+  refresh().catch(() => {});
+  loadLog();
+};
 
-/* ---------------- вкладки ---------------- */
+/* =================== вкладки =================== */
 const tabs = document.querySelectorAll(".tabs button");
-tabs.forEach(t => t.onclick = () => {
-  tabs.forEach(x => x.setAttribute("aria-selected", String(x === t)));
-  document.querySelectorAll("[data-p]").forEach(p => p.hidden = p.dataset.p !== t.dataset.t);
-  if (t.dataset.t === "log") loadLog();
-  try { localStorage.setItem("ytsync-tab", t.dataset.t); } catch(e) {}
+tabs.forEach(tb => tb.onclick = () => {
+  tabs.forEach(x => x.setAttribute("aria-selected", String(x === tb)));
+  document.querySelectorAll("[data-p]").forEach(p => p.hidden = p.dataset.p !== tb.dataset.t);
+  if (tb.dataset.t === "log") loadLog();
+  try { localStorage.setItem("ytsync-tab", tb.dataset.t); } catch(e) {}
 });
 try {
   const saved = localStorage.getItem("ytsync-tab");
   if (saved) { const b = document.querySelector(`.tabs button[data-t="${saved}"]`); if (b) b.click(); }
 } catch(e) {}
 
-/* ---------------- строка плейлиста ---------------- */
+/* =================== строка плейлиста =================== */
 function rail(p) {
   if (p.running) return "run";
   if (p.lost) return "bad";
@@ -365,26 +530,37 @@ function rail(p) {
 function sizeChip(p) {
   if (!p.pending) return "";
   return p.pending_gb != null
-    ? `<span class="chip">≈ ${p.pending_gb} ГБ</span>`
-    : `<span class="chip">объём неизвестен</span>`;
+    ? `<span class="chip">≈ ${p.pending_gb} GB</span>`
+    : `<span class="chip">${t("size_unknown")}</span>`;
+}
+function tbl(items, withReason) {
+  if (!items || !items.length) return `<div class="hint">${t("empty")}</div>`;
+  return `<div class="scroll"><table><tr><th>${t("th_id")}</th><th>${t("th_title")}</th>${
+    withReason ? `<th>${t("th_reason")}</th>` : ""}</tr>` + items.map(i => `<tr>
+      <td class="mono"><a href="https://youtu.be/${esc(i.video_id)}" target="_blank"
+        rel="noopener">${esc(i.video_id)}</a></td>
+      <td>${esc(i.title)}</td>
+      ${withReason ? `<td>${esc(i.problem || t("reason_gone"))}</td>` : ""}</tr>`).join("")
+    + "</table></div>";
 }
 function row(p) {
   const acts = p.running
-    ? `<button disabled>Синк</button>`
+    ? `<button disabled>${t("run_sync")}</button>`
     : p.queued
-      ? `<button data-act="unqueue" data-f="${esc(p.folder)}">Убрать из очереди</button>`
-      : `<button data-act="index" data-f="${esc(p.folder)}">Индекс</button>
-         <button class="primary" data-act="sync" data-f="${esc(p.folder)}">Синк</button>`;
-  const badge = p.running ? `<span class="chip run"><i class="pulse"></i>идёт синк</span>`
-    : p.queued ? `<span class="chip warn">в очереди</span>` : "";
+      ? `<button data-act="unqueue" data-f="${esc(p.folder)}">${t("run_unqueue")}</button>`
+      : `<button data-act="index" data-f="${esc(p.folder)}">${t("run_index")}</button>
+         <button class="primary" data-act="sync" data-f="${esc(p.folder)}">${t("run_sync")}</button>`;
+  const badge = p.running
+    ? `<span class="chip run"><i class="pulse"></i>${t("badge_running")}</span>`
+    : p.queued ? `<span class="chip warn">${t("badge_queued")}</span>` : "";
   // Нулевые счётчики не показываем: они только шумят. Всего и скачано — всегда.
   const nums = [
-    `всего <b>${p.in_playlist}</b>`,
-    `скачано <b class="g">${p.downloaded}</b>`,
-    p.pending ? `в очереди <b class="y">${p.pending}</b>` : "",
-    p.rescued ? `спасено <b class="g">${p.rescued}</b>` : "",
-    p.lost ? `упущено <b class="r">${p.lost}</b>` : "",
-    p.files_without_id ? `без ID <b class="y">${p.files_without_id}</b>` : "",
+    `${t("n_total")} <b>${p.in_playlist}</b>`,
+    `${t("n_done")} <b class="g">${p.downloaded}</b>`,
+    p.pending ? `${t("n_pending")} <b class="y">${p.pending}</b>` : "",
+    p.rescued ? `${t("n_rescued")} <b class="g">${p.rescued}</b>` : "",
+    p.lost ? `${t("n_lost")} <b class="r">${p.lost}</b>` : "",
+    p.files_without_id ? `${t("n_noid")} <b class="y">${p.files_without_id}</b>` : "",
   ].filter(Boolean).map(x => `<span>${x}</span>`).join("");
 
   // Ключ нужен, чтобы раскрытый список пережил перерисовку по опросу состояния
@@ -394,55 +570,42 @@ function row(p) {
       <summary>${title}</summary>${openDet === k ? body : ""}</details>`;
   };
   const det = [
-    p.pending ? dd("pending", `В очереди на скачивание — ${p.pending}`,
-      `<div class="hint">Доступны на YouTube, локально их пока нет.</div>
-       ${tbl(p.pending_items, false)}`) : "",
-    p.rescued ? dd("rescued", `Спасено — ${p.rescued}`,
-      `<div class="hint">На YouTube уже не посмотреть, а у тебя лежит.</div>
-       ${tbl(p.rescued_items, true)}`) : "",
-    p.lost ? dd("lost", `Упущено — ${p.lost}`,
-      `<div class="hint">Недоступно на YouTube и не скачано. Часть бывает чинибельной —
-         попробуй «Повторить упущенные».</div>
-       ${tbl(p.lost_items, true)}
+    p.pending ? dd("pending", t("d_pending", {n:p.pending}),
+      `<div class="hint">${t("d_pending_hint")}</div>${tbl(p.pending_items, false)}`) : "",
+    p.rescued ? dd("rescued", t("d_rescued", {n:p.rescued}),
+      `<div class="hint">${t("d_rescued_hint")}</div>${tbl(p.rescued_items, true)}`) : "",
+    p.lost ? dd("lost", t("d_lost", {n:p.lost}),
+      `<div class="hint">${t("d_lost_hint")}</div>${tbl(p.lost_items, true)}
        <button class="sm" style="margin-top:7px" data-act="retry" data-f="${esc(p.folder)}">
-         Повторить упущенные (${p.lost})</button>`) : "",
-    p.files_without_id ? dd("orph", `Файлы без ID в имени — ${p.files_without_id}`,
-      `<div class="hint">Сопоставить автоматически нельзя — вкладка «Сверка».</div>
+         ${t("d_retry", {n:p.lost})}</button>`) : "",
+    p.files_without_id ? dd("orph", t("d_orph", {n:p.files_without_id}),
+      `<div class="hint">${t("d_orph_hint")}</div>
        ${orphCache[p.folder]
          ? `<div class="scroll"><table>${orphCache[p.folder]
              .map(f => `<tr><td class="mono">${esc(f)}</td></tr>`).join("")}</table></div>`
-         : '<div class="hint">загружаю…</div>'}`,
+         : `<div class="hint">${t("loading")}</div>`}`,
       ` data-orph="${esc(p.folder)}"`) : "",
   ].join("");
+
   return `<div class="row">
     <div class="rail ${rail(p)}"></div>
     <div class="rmain">
       <div class="rid"><b>${esc(p.name)}</b><span class="rpath mono">/${esc(p.folder)}</span>
         ${badge}${sizeChip(p)}
-        ${p.indexed ? "" : '<span class="chip">не индексирован</span>'}</div>
+        ${p.indexed ? "" : `<span class="chip">${t("badge_noindex")}</span>`}</div>
       <div class="rnums mono">${nums}</div>
       <div class="racts">${acts}
-        <button class="danger" data-act="del" data-f="${esc(p.folder)}">Убрать</button></div>
-      <div class="rmeta">проверен ${ago(p.indexed_at)}${
-        p.last_run && p.last_run.added ? ` · в прошлый раз скачано ${p.last_run.added}` : ""}${
+        <button class="danger" data-act="del" data-f="${esc(p.folder)}">${t("run_del")}</button></div>
+      <div class="rmeta">${t("meta_checked", {t: ago(p.indexed_at)})}${
+        p.last_run && p.last_run.added ? ` · ${t("meta_added", {n:p.last_run.added})}` : ""}${
         p.last_run && p.last_run.message
           ? ` · <span style="color:var(--bad)">${esc(p.last_run.message)}</span>` : ""}</div>
       ${det ? `<div class="rdet">${det}</div>` : ""}
     </div>
   </div>`;
 }
-function tbl(items, withReason) {
-  if (!items || !items.length) return '<div class="hint">пусто</div>';
-  return `<div class="scroll"><table><tr><th>ID</th><th>Название</th>${
-    withReason ? "<th>Причина</th>" : ""}</tr>` + items.map(i => `<tr>
-      <td class="mono"><a href="https://youtu.be/${esc(i.video_id)}" target="_blank"
-        rel="noopener">${esc(i.video_id)}</a></td>
-      <td>${esc(i.title)}</td>
-      ${withReason ? `<td>${esc(i.problem || "нет в плейлисте")}</td>` : ""}</tr>`).join("")
-    + "</table></div>";
-}
 
-/* ---------------- обновление ---------------- */
+/* =================== обновление =================== */
 async function refresh() {
   const s = await api("/api/state");
   STATE = s;
@@ -450,39 +613,40 @@ async function refresh() {
   busy = !!cur;
 
   $("#status").innerHTML =
-    `<span>расписание <b>${(s.config.schedule_hours||[]).map(h=>h+":00").join(", ") || "выкл"}</b></span>
+    `<span>${t("st_schedule")} <b>${(s.config.schedule_hours||[]).map(h=>h+":00").join(", ")
+      || t("st_off")}</b></span>
      <span class="sep">·</span>
-     <span>диск <b>${d.free_gb ?? "?"} ГБ</b> из ${d.total_gb ?? "?"}</span>
-     <span class="sep">·</span><span><b>${d.used_pct ?? "?"}%</b> занято</span>
-     ${s.quiet_now ? '<span class="sep">·</span><span class="chip warn">тихие часы</span>' : ""}`;
+     <span>${t("st_disk")} <b>${d.free_gb ?? "?"} GB</b> ${t("st_of")} ${d.total_gb ?? "?"}</span>
+     <span class="sep">·</span><span><b>${d.used_pct ?? "?"}%</b> ${t("st_used")}</span>
+     ${s.quiet_now ? `<span class="sep">·</span><span class="chip warn">${t("st_quiet")}</span>` : ""}`;
 
-  $("#warn").innerHTML = !s.space_ok
-    ? `<div class="banner">${esc(s.space_warning)}</div>` : "";
+  $("#warn").innerHTML = !s.space_ok ? `<div class="banner">${esc(s.space_warning)}</div>` : "";
 
+  const qchips = r.queue.map(j => `<span class="chip">${esc(j.folder)} · ${esc(j.kind)}
+      <button class="sm" data-act="unqueue" data-f="${esc(j.folder)}"
+      style="padding:0 4px;border:0;background:none">✕</button></span>`).join("");
   $("#runbar").innerHTML = cur ? `<div class="runbar">
       <div class="runtop">
         <span class="chip run"><i class="pulse"></i>${esc(cur.stage || cur.kind)}</span>
         <b>${esc(cur.folder)}</b>
-        ${cur.expected ? `<span class="mono" style="font-size:12.5px">файл ${
-          cur.done || 0} из ${cur.expected}</span>` : ""}
-        ${cur.percent ? `<span class="mono" style="font-size:12.5px">${cur.percent.toFixed(1)}%</span>` : ""}
+        ${cur.expected ? `<span class="mono" style="font-size:13px">${
+          t("file_of", {a: cur.done || 0, b: cur.expected})}</span>` : ""}
+        ${cur.percent ? `<span class="mono" style="font-size:13px">${cur.percent.toFixed(1)}%</span>` : ""}
         <span class="grow"></span>
-        <button id="bPause">Пауза</button>
-        <button class="danger" id="bStop" title="Недокачанный файл сохранится и продолжится позже">Остановить</button>
+        <button id="bPause">${t("b_pause")}</button>
+        <button class="danger" id="bStop" title="${t("b_stop_title")}">${t("b_stop")}</button>
       </div>
       ${cur.item ? `<div class="runfile mono">${esc(cur.item)}</div>` : ""}
       <div class="prog"><i style="width:${cur.percent || 0}%"></i></div>
-      ${r.queued ? `<div class="queue"><span>Дальше:</span>${
-        r.queue.map(j => `<span class="chip">${esc(j.folder)} · ${esc(j.kind)}
-          <button class="sm" data-act="unqueue" data-f="${esc(j.folder)}"
-          style="padding:0 4px;border:0;background:none">✕</button></span>`).join("")}
-        <button class="sm" id="bQClear">Очистить очередь</button></div>` : ""}
+      ${r.queued ? `<div class="queue"><span>${t("q_next")}</span>${qchips}
+        <button class="sm" id="bQClear">${t("q_clear")}</button></div>` : ""}
     </div>` : (r.queued ? `<div class="runbar"><div class="queue">
-        <span>В очереди:</span>${r.queue.map(j => `<span class="chip">${esc(j.folder)}</span>`).join("")}
-        <button class="sm" id="bQClear">Очистить очередь</button></div></div>` : "");
+        <span>${t("q_inq")}</span>${qchips}
+        <button class="sm" id="bQClear">${t("q_clear")}</button></div></div>` : "");
 
   $("#bSync").disabled = busy;
   $("#bIndex").disabled = busy;
+
   // Перерисовываем только при реальных изменениях: иначе каждые 2 секунды
   // сбрасывалась бы прокрутка и мерцал текст. Подпись компактная — по числам,
   // а не по всем спискам, чтобы не гонять сотни килобайт на каждом опросе.
@@ -491,17 +655,17 @@ async function refresh() {
                           p.rescued, p.lost, p.files_without_id, p.pending_gb,
                           p.queued, p.running, p.indexed_at,
                           p.last_run && p.last_run.finished]),
-    openDet, Object.keys(orphCache).sort()]);
+    openDet, Object.keys(orphCache).sort(), lang]);
   if (sig !== cardsSig) {
     cardsSig = sig;
     $("#cards").innerHTML = s.playlists.length ? s.playlists.map(row).join("")
-      : '<div class="card empty">Плейлистов пока нет. Добавь первый ниже — он сразу проиндексируется, но качать ничего не начнёт.</div>';
+      : `<div class="card empty">${t("no_playlists")}</div>`;
   }
   $("#folders").innerHTML = (s.known_folders||[]).map(f => `<option value="${esc(f)}">`).join("");
 
   const sel = $("#recFolder"), keep = sel.value;
-  sel.innerHTML = s.playlists.map(p =>
-    `<option value="${esc(p.folder)}">${esc(p.name)} (без ID: ${p.files_without_id})</option>`).join("");
+  sel.innerHTML = s.playlists.map(p => `<option value="${esc(p.folder)}">${
+    esc(t("rec_folder_opt", {name: p.name, n: p.files_without_id}))}</option>`).join("");
   if (keep) sel.value = keep;
 
   const c = s.config;
@@ -516,8 +680,8 @@ async function refresh() {
   const k = s.cookies || {};
   $("#cookState").className = "chip " + (k.present ? "ok" : "");
   $("#cookState").textContent = k.present
-    ? `${k.count} кук · ${(k.domains||[]).slice(0,3).join(", ")} · ${dt(k.mtime)}`
-    : "не загружены";
+    ? `${t("ck_count", {n:k.count})} · ${(k.domains||[]).slice(0,3).join(", ")} · ${dt(k.mtime)}`
+    : t("ck_none");
   $("#kDel").disabled = !k.present;
 }
 
@@ -526,11 +690,11 @@ async function loadLog() {
     const l = await api("/api/log?limit=250");
     $("#log").textContent = l.map(x =>
       `${x.ts.replace("T"," ").replace("+00:00","")} ${x.folder ? "["+x.folder+"] " : ""}${x.line}`
-    ).join("\n") || "пусто";
+    ).join("\n") || t("log_empty");
   } catch(e) {}
 }
 
-/* ---------------- действия ---------------- */
+/* =================== действия =================== */
 document.addEventListener("click", async e => {
   const b = e.target.closest("button[data-act]");
   if (!b) return;
@@ -538,17 +702,17 @@ document.addEventListener("click", async e => {
   const p = (STATE?.playlists || []).find(x => x.folder === f);
   try {
     if (act === "del") {
-      if (!confirm(`Убрать «${f}» из списка?\n\nФайлы и archive.txt останутся на месте — удаляется только запись.`)) return;
+      if (!confirm(t("c_del", {f}))) return;
       await api("/api/playlists/" + encodeURIComponent(f), {method:"DELETE"});
     } else if (act === "unqueue") {
       await api("/api/queue?folder=" + encodeURIComponent(f), {method:"DELETE"});
     } else if (act === "retry") {
       const r = await api("/api/retry/" + encodeURIComponent(f), {method:"POST"});
-      alert(r.message + (r.count ? ` (${r.count} шт.)` : ""));
+      alert(r.message + (r.count ? ` (${r.count})` : ""));
     } else if (act === "sync") {
       // Подтверждаем только дорогой запуск, чтобы не докучать на мелочи
       if (p && p.pending_gb != null && p.pending_gb >= 10 &&
-          !confirm(`Скачать ${p.pending} видео, примерно ${p.pending_gb} ГБ?\n\nСвободно ${STATE.disk.free_gb} ГБ.`)) return;
+          !confirm(t("c_sync", {n:p.pending, gb:p.pending_gb, free:STATE.disk.free_gb}))) return;
       const r = await api(`/api/run/sync?folder=${encodeURIComponent(f)}`, {method:"POST"});
       if (!r.ok) alert(r.message);
     } else {
@@ -566,16 +730,15 @@ document.addEventListener("click", async e => {
   e.preventDefault();
   const d = s.parentElement, key = d.dataset.det;
   openDet = (openDet === key) ? null : key;
-  cardsSig = "";                       // заставляем перерисовать с новым состоянием
+  cardsSig = "";
   await refresh().catch(() => {});
-  // Список файлов без ID подгружаем лениво и кладём в кэш, чтобы не тянуть заново
   const folder = d.dataset.orph;
   if (folder && openDet === key && !orphCache[folder]) {
     try {
       orphCache[folder] = (await api("/api/orphans/" + encodeURIComponent(folder))).files;
       cardsSig = "";
       await refresh().catch(() => {});
-    } catch (err) { /* покажем «загружаю…», это не критично */ }
+    } catch (err) { /* останется «загружаю…», это не критично */ }
   }
 });
 
@@ -592,7 +755,7 @@ document.addEventListener("click", async e => {
 
 $("#bSync").onclick = async () => {
   const tot = (STATE?.playlists || []).reduce((a, p) => a + (p.pending_gb || 0), 0);
-  if (tot >= 10 && !confirm(`Синхронизировать все плейлисты?\n\nПримерно ${tot.toFixed(1)} ГБ к загрузке, свободно ${STATE.disk.free_gb} ГБ.`)) return;
+  if (tot >= 10 && !confirm(t("c_sync_all", {gb: tot.toFixed(1), free: STATE.disk.free_gb}))) return;
   try { await api("/api/run/sync", {method:"POST"}); refresh(); loadLog(); }
   catch (err) { alert(err.message); }
 };
@@ -602,7 +765,7 @@ $("#bIndex").onclick = async () => {
 };
 $("#bLog").onclick = loadLog;
 $("#bOut").onclick = async () => {
-  if (!confirm("Выйти из ytsync в этом браузере?")) return;
+  if (!confirm(t("c_logout"))) return;
   await api("/api/auth/logout", {method:"POST"}); location.href = "/login";
 };
 
@@ -613,9 +776,7 @@ $("#fAdd").onsubmit = async e => {
       headers:{"Content-Type":"application/json"},
       body: JSON.stringify({url:$("#aUrl").value, folder:$("#aFolder").value, name:$("#aName").value})});
     $("#aUrl").value = $("#aFolder").value = $("#aName").value = "";
-    alert(r.archive_created
-      ? "Папка создана, archive.txt пустой — при первом синке скачается весь плейлист."
-      : `Использую существующий archive.txt: ${r.archive_entries} записей, они не перекачаются.`);
+    alert(r.archive_created ? t("a_add_new") : t("a_add_old", {n:r.archive_entries}));
     refresh(); loadLog();
   } catch (err) { alert(err.message); }
 };
@@ -640,11 +801,11 @@ $("#fPw").onsubmit = async e => {
     await api("/api/auth/password", {method:"POST", headers:{"Content-Type":"application/json"},
       body: JSON.stringify({current:$("#pwOld").value, password:$("#pwNew").value})});
     $("#pwOld").value = $("#pwNew").value = "";
-    alert("Пароль изменён. Этот браузер остался в системе.");
+    alert(t("a_pw_ok"));
   } catch (err) { alert(err.message); }
 };
 $("#bRevoke").onclick = async () => {
-  if (!confirm("Разлогинить все устройства, включая это?")) return;
+  if (!confirm(t("c_revoke"))) return;
   await api("/api/auth/revoke", {method:"POST"});
   location.href = "/login";
 };
@@ -653,37 +814,37 @@ async function sendCookies(body, isFile) {
   const opt = isFile ? {method:"POST", body}
     : {method:"POST", headers:{"Content-Type":"application/json"}, body:JSON.stringify({text:body})};
   const c = (await api("/api/cookies", opt)).cookies;
-  alert(`Сохранено ${c.count} кук для ${(c.domains||[]).join(", ")}.` +
-    (c.dropped ? `\n\nОтброшено посторонних: ${c.dropped}` : ""));
+  alert(t("a_ck_ok", {n:c.count, d:(c.domains||[]).join(", ")})
+        + (c.dropped ? t("a_ck_drop", {n:c.dropped}) : ""));
   refresh(); loadLog();
 }
 $("#fCook").onsubmit = async e => {
   e.preventDefault();
   const f = $("#kFile").files[0];
-  if (!f) { alert("Выбери файл"); return; }
+  if (!f) { alert(t("a_pick_file")); return; }
   const fd = new FormData(); fd.append("file", f);
   try { await sendCookies(fd, true); $("#kFile").value = ""; } catch (err) { alert(err.message); }
 };
 $("#kPaste").onclick = async () => {
-  if (!$("#kText").value.trim()) { alert("Пусто"); return; }
+  if (!$("#kText").value.trim()) { alert(t("a_empty")); return; }
   try { await sendCookies($("#kText").value, false); $("#kText").value = ""; }
   catch (err) { alert(err.message); }
 };
 $("#kDel").onclick = async () => {
-  if (!confirm("Удалить файл кук с сервера?")) return;
+  if (!confirm(t("c_ckdel"))) return;
   try { await api("/api/cookies", {method:"DELETE"}); refresh(); loadLog(); }
   catch (err) { alert(err.message); }
 };
 
-/* ---------------- сверка ---------------- */
+/* =================== сверка =================== */
 $("#recLoad").onclick = async () => {
   const f = $("#recFolder").value;
   if (!f) return;
-  $("#recBody").innerHTML = '<div class="empty">Подбираю…</div>';
+  $("#recBody").innerHTML = `<div class="empty">${t("rec_working")}</div>`;
   try {
     const d = await api("/api/reconcile/" + encodeURIComponent(f));
     if (!d.items.length) {
-      $("#recBody").innerHTML = '<div class="empty">Файлов без ID в этой папке нет.</div>';
+      $("#recBody").innerHTML = `<div class="empty">${t("rec_none")}</div>`;
       $("#recApply").disabled = true; return;
     }
     $("#recBody").innerHTML = d.items.map((it, i) => `<div class="rec-item">
@@ -692,22 +853,22 @@ $("#recLoad").onclick = async () => {
           <input type="radio" name="rec${i}" value="${esc(s.video_id)}">
           <span>${esc(s.title)}
             <span class="score">· ${Math.round(s.score*100)}% · ${esc(s.video_id)}${
-              s.in_playlist ? "" : " · нет в плейлисте"}</span></span></label>`).join("")
-        : '<div class="hint">Похожих не нашлось.</div>'}
+              s.in_playlist ? "" : " · " + t("rec_notin")}</span></span></label>`).join("")
+        : `<div class="hint">${t("rec_nomatch")}</div>`}
       <label class="rec-opt"><input type="radio" name="rec${i}" value="" checked>
-        <span class="score">пропустить</span></label></div>`).join("");
+        <span class="score">${t("rec_skip")}</span></label></div>`).join("");
     $("#recApply").disabled = false;
   } catch (err) { $("#recBody").innerHTML = `<div class="empty">${esc(err.message)}</div>`; }
 };
 $("#recApply").onclick = async () => {
   const pairs = [...document.querySelectorAll("#recBody input[type=radio]:checked")]
     .filter(r => r.value).map(r => ({video_id: r.value}));
-  if (!pairs.length) { alert("Ничего не выбрано."); return; }
-  if (!confirm(`Дописать ${pairs.length} ID в archive.txt?\n\nЭти видео больше не будут скачиваться.`)) return;
+  if (!pairs.length) { alert(t("rec_nothing")); return; }
+  if (!confirm(t("rec_confirm", {n:pairs.length}))) return;
   try {
     const r = await api("/api/reconcile/" + encodeURIComponent($("#recFolder").value),
       {method:"POST", headers:{"Content-Type":"application/json"}, body: JSON.stringify({pairs})});
-    alert(`Добавлено записей: ${r.added}`);
+    alert(t("rec_added", {n:r.added}));
     $("#recLoad").click(); refresh();
   } catch (err) { alert(err.message); }
 };

@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>ytsync — вход</title>
+<title>ytsync</title>
 <link rel="stylesheet" href="/static/fonts.css">
 <style>
   :root{color-scheme:light;
@@ -18,82 +18,126 @@
   *{box-sizing:border-box}
   body{margin:0;min-height:100vh;display:flex;align-items:center;justify-content:center;
        background:var(--paper);color:var(--ink);padding:24px;
-       font:14.5px/1.5 "IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+       font:16px/1.5 "IBM Plex Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
        -webkit-font-smoothing:antialiased}
   .box{background:var(--surface);border:1px solid var(--line);border-radius:13px;
-       padding:26px 26px 22px;width:100%;max-width:390px}
-  h1{font-size:19px;margin:0 0 6px;letter-spacing:-.01em}
-  p{margin:0 0 18px;color:var(--mut);font-size:13.5px}
-  label{display:block;font-size:12.5px;color:var(--mut);margin:0 0 5px}
-  input{width:100%;font:inherit;padding:9px 11px;border-radius:9px;
+       padding:26px 26px 20px;width:100%;max-width:400px}
+  h1{font-size:20px;margin:0 0 6px;letter-spacing:-.01em}
+  p{margin:0 0 18px;color:var(--mut);font-size:14px}
+  label{display:block;font-size:13px;color:var(--mut);margin:0 0 5px}
+  input{width:100%;font:inherit;font-size:14.5px;padding:9px 11px;border-radius:9px;
         border:1px solid var(--line2);background:var(--paper);color:var(--ink)}
   input:focus{outline:2px solid var(--run);outline-offset:1px;border-color:var(--run)}
-  button{width:100%;margin-top:14px;font:inherit;font-weight:600;padding:9px;
+  button{width:100%;margin-top:14px;font:inherit;font-size:14.5px;font-weight:600;padding:9px;
          border-radius:9px;border:1px solid var(--run);background:var(--run);color:#fff;
          cursor:pointer}
   button:disabled{opacity:.5;cursor:default}
-  .err{color:var(--bad);font-size:13px;margin-top:11px;min-height:18px}
-  .note{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
-        font-size:12px;color:var(--mut)}
+  .err{color:var(--bad);font-size:13.5px;margin-top:11px;min-height:18px}
+  .foot{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);
+        font-size:12.5px;color:var(--mut);display:flex;gap:10px;align-items:center}
+  .foot select{font:inherit;font-size:12.5px;padding:3px 7px;border-radius:7px;
+               border:1px solid var(--line2);background:var(--paper);color:var(--ink)}
   .field+.field{margin-top:12px}
 </style>
 </head>
 <body>
 <form class="box" id="f">
-  {% if setup %}
-    <h1>Задайте пароль</h1>
-    <p>Это первый запуск. Пароль сохранится в виде хеша — восстановить его будет нельзя,
-       только сбросить, удалив файл на сервере.</p>
-    <div class="field">
-      <label for="p">Пароль администратора</label>
-      <input id="p" type="password" autocomplete="new-password" minlength="6" required autofocus>
-    </div>
-    <div class="field">
-      <label for="p2">Повторите пароль</label>
-      <input id="p2" type="password" autocomplete="new-password" minlength="6" required>
-    </div>
-    <button type="submit">Сохранить и войти</button>
-  {% else %}
-    <h1>ytsync</h1>
-    <p>Введите пароль. Браузер запомнит вход на полгода.</p>
-    <div class="field">
-      <label for="p">Пароль</label>
-      <input id="p" type="password" autocomplete="current-password" required autofocus>
-    </div>
-    <button type="submit">Войти</button>
-  {% endif %}
+  <h1 id="h"></h1>
+  <p id="lede"></p>
+  <div class="field">
+    <label for="p" id="lp"></label>
+    <input id="p" type="password" minlength="6" required autofocus>
+  </div>
+  <div class="field" id="f2" hidden>
+    <label for="p2" id="lp2"></label>
+    <input id="p2" type="password" autocomplete="new-password" minlength="6">
+  </div>
+  <button type="submit" id="sub"></button>
   <div class="err" id="err"></div>
-  <div class="note">Доступ только по локальной сети. Соединение не шифруется,
-    поэтому пароль стоит держать отличным от других.</div>
+  <div class="foot">
+    <span id="note" style="flex:1"></span>
+    <select id="lang">
+      <option value="ru">Русский</option>
+      <option value="en">English</option>
+    </select>
+  </div>
 </form>
 
 <script>
-  const SETUP = {{ 'true' if setup else 'false' }};
-  const f = document.getElementById("f"), err = document.getElementById("err");
-  f.addEventListener("submit", async e => {
-    e.preventDefault();
-    err.textContent = "";
-    const pw = document.getElementById("p").value;
-    if (SETUP) {
-      const p2 = document.getElementById("p2").value;
-      if (pw !== p2) { err.textContent = "Пароли не совпадают"; return; }
-      if (pw.length < 6) { err.textContent = "Не короче 6 символов"; return; }
-    }
-    const btn = f.querySelector("button");
-    btn.disabled = true;
-    try {
-      const r = await fetch(SETUP ? "/api/auth/setup" : "/api/auth/login", {
-        method: "POST", headers: {"Content-Type": "application/json"},
-        body: JSON.stringify({password: pw})
-      });
-      const d = await r.json().catch(() => ({}));
-      if (!r.ok) { err.textContent = d.error || "Не удалось войти"; btn.disabled = false; return; }
-      location.href = "/";
-    } catch (e2) {
-      err.textContent = "Сервер не отвечает";
-      btn.disabled = false;
-    }
-  });
+const SETUP = {{ 'true' if setup else 'false' }};
+const S = {
+  ru: {
+    setup_h:"Задайте пароль",
+    setup_lede:"Это первый запуск. Пароль сохранится в виде хеша — восстановить его будет нельзя, только сбросить, удалив файл на сервере.",
+    setup_p:"Пароль администратора", setup_p2:"Повторите пароль", setup_btn:"Сохранить и войти",
+    login_h:"ytsync", login_lede:"Введите пароль. Браузер запомнит вход на полгода.",
+    login_p:"Пароль", login_btn:"Войти",
+    note:"Доступ только по локальной сети. Соединение не шифруется, поэтому пароль стоит держать отличным от других.",
+    mismatch:"Пароли не совпадают", short:"Не короче 6 символов",
+    fail:"Не удалось войти", down:"Сервер не отвечает",
+  },
+  en: {
+    setup_h:"Set a password",
+    setup_lede:"This is the first launch. The password is stored as a hash — it cannot be recovered, only reset by deleting the file on the server.",
+    setup_p:"Admin password", setup_p2:"Repeat password", setup_btn:"Save and sign in",
+    login_h:"ytsync", login_lede:"Enter your password. This browser stays signed in for six months.",
+    login_p:"Password", login_btn:"Sign in",
+    note:"LAN access only. The connection is not encrypted, so use a password you do not reuse elsewhere.",
+    mismatch:"Passwords do not match", short:"At least 6 characters",
+    fail:"Could not sign in", down:"Server is not responding",
+  }
+};
+let lang = "ru";
+try { lang = localStorage.getItem("ytsync-lang")
+      || ((navigator.language || "").toLowerCase().startsWith("ru") ? "ru" : "en"); } catch(e) {}
+try { const th = localStorage.getItem("ytsync-theme");
+      if (th && th !== "auto") document.documentElement.setAttribute("data-theme", th); } catch(e) {}
+
+const $ = i => document.getElementById(i);
+function paint() {
+  const d = S[lang] || S.ru;
+  document.documentElement.lang = lang;
+  $("h").textContent = SETUP ? d.setup_h : d.login_h;
+  $("lede").textContent = SETUP ? d.setup_lede : d.login_lede;
+  $("lp").textContent = SETUP ? d.setup_p : d.login_p;
+  $("p").autocomplete = SETUP ? "new-password" : "current-password";
+  $("f2").hidden = !SETUP;
+  $("p2").required = SETUP;
+  $("lp2").textContent = d.setup_p2;
+  $("sub").textContent = SETUP ? d.setup_btn : d.login_btn;
+  $("note").textContent = d.note;
+  $("lang").value = lang;
+}
+$("lang").onchange = e => {
+  lang = e.target.value;
+  try { localStorage.setItem("ytsync-lang", lang); } catch(err) {}
+  paint();
+};
+paint();
+
+$("f").addEventListener("submit", async e => {
+  e.preventDefault();
+  const d = S[lang] || S.ru;
+  $("err").textContent = "";
+  const pw = $("p").value;
+  if (SETUP) {
+    if (pw !== $("p2").value) { $("err").textContent = d.mismatch; return; }
+    if (pw.length < 6) { $("err").textContent = d.short; return; }
+  }
+  $("sub").disabled = true;
+  try {
+    const r = await fetch(SETUP ? "/api/auth/setup" : "/api/auth/login", {
+      method: "POST", headers: {"Content-Type": "application/json"},
+      body: JSON.stringify({password: pw})
+    });
+    const j = await r.json().catch(() => ({}));
+    if (!r.ok) { $("err").textContent = j.error || d.fail; $("sub").disabled = false; return; }
+    location.href = "/";
+  } catch (e2) {
+    $("err").textContent = d.down;
+    $("sub").disabled = false;
+  }
+});
 </script>
 </body>
 </html>
