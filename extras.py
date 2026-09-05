@@ -60,7 +60,7 @@ def set_password(pw: str) -> None:
         # Секрет подписи сессий: меняется только при «выйти на всех устройствах»
         "secret": old.get("secret") or secrets.token_hex(32),
     })
-    core.log("", "пароль установлен" if not old else "пароль изменён")
+    core.logk("", "log_pw_changed" if old else "log_pw_set")
 
 
 def check_password(pw: str) -> bool:
@@ -99,7 +99,7 @@ def revoke_sessions() -> None:
         return
     a["secret"] = secrets.token_hex(32)
     _write(a)
-    core.log("", "сессии сброшены на всех устройствах")
+    core.logk("", "log_sessions_revoked")
 
 
 # ------------------------------------- сверка файлов без ID с плейлистом
@@ -166,5 +166,5 @@ def reconcile_apply(folder: str, pairs: list[dict]) -> int:
     if body and not body.endswith("\n"):
         body += "\n"
     ap.write_text(body + "".join(f"youtube {v}\n" for v in ids))
-    core.log(folder, f"сверка: в archive.txt добавлено записей — {len(ids)}")
+    core.logk(folder, "log_reconciled", n=len(ids))
     return len(ids)

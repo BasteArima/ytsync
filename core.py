@@ -52,6 +52,41 @@ DEFAULT_CONFIG = {
     "quiet_hours": [],
 }
 
+# Русские варианты сообщений журнала. Хранятся в базе как запасной текст на
+# случай, если интерфейс встретит ключ, которого не знает.
+_RU_LOG = {
+    "log_indexed": "проиндексировано записей: {n}",
+    "log_dead": "из них недоступно (удалено или приватно): {n}",
+    "log_pending": "к загрузке новых: {n}",
+    "log_downloaded": "скачано новых: {n}",
+    "log_downloading": "качаю: {name}",
+    "log_retry": "перепроверяю упущенных: {n}",
+    "log_stopped": "остановлено вручную; недокачанный файл сохранён и продолжится "
+                   "при следующем запуске",
+    "log_paused": "пауза: текущий файл дописан, остальное отложено",
+    "log_timeout": "таймаут {n} с",
+    "log_badjson": "не удалось разобрать ответ yt-dlp",
+    "log_index_failed": "индексация не удалась",
+    "log_nospace": "свободно {free} ГБ при пороге {need} ГБ — скачивание не начато",
+    "log_added_new": "плейлист добавлен; создана папка и пустой archive.txt",
+    "log_added_existing": "плейлист добавлен; использую существующий archive.txt "
+                          "({n} записей)",
+    "log_removed": "плейлист убран из конфига, файлы не тронуты",
+    "log_unqueued": "снято из очереди: {n}",
+    "log_queue_cleared": "очередь очищена после остановки: снято {n}",
+    "log_schedule": "расписание {h}:00 — поставлено в очередь: {n}",
+    "log_quiet": "тихие часы ({h}:00) — встаю после текущего файла",
+    "log_reconciled": "сверка: в archive.txt добавлено записей — {n}",
+    "log_cookies_saved": "куки сохранены: оставлено {kept} из {total}, "
+                         "отброшено посторонних {dropped}",
+    "log_cookies_cleared": "куки удалены",
+    "log_pw_set": "пароль установлен",
+    "log_pw_changed": "пароль изменён",
+    "log_sessions_revoked": "сессии сброшены на всех устройствах",
+    "log_badlogin": "неудачная попытка входа",
+    "log_sched_err": "планировщик: {err}",
+}
+
 _cfg_lock = threading.Lock()
 _db_lock = threading.Lock()
 
@@ -184,9 +219,19 @@ def init_db() -> None:
             CREATE INDEX IF NOT EXISTS log_ts ON log(id DESC);
             """
         )
+        # Миграция: раньше в журнал писался готовый текст, из-за чего он
+        # оставался русским в английском интерфейсе. Теперь рядом хранятся
+        # ключ и параметры, а перевод делает морда. Старые записи остаются
+        # как есть — у них key пустой, и показывается сохранённый текст.
+        cols = {r[1] for r in c.execute("PRAGMA table_info(log)")}
+        if "key" not in cols:
+            c.execute("ALTER TABLE log ADD COLUMN key TEXT")
+        if "args" not in cols:
+            c.execute("ALTER TABLE log ADD COLUMN args TEXT")
 
 
 def log(folder: str, line: str, level: str = "info") -> None:
+    """Сырая строка — для вывода yt-dlp и прочего, что переводить нечего."""
     line = line.rstrip()
     if not line:
         return
@@ -196,16 +241,37 @@ def log(folder: str, line: str, level: str = "info") -> None:
         c.execute("DELETE FROM log WHERE id < (SELECT MAX(id)-5000 FROM log)")
 
 
+def logk(folder: str, key: str, level: str = "info", **args) -> None:
+    """Наше собственное сообщение: храним ключ и параметры, а не готовый текст.
+
+    В `line` кладём русский вариант — он останется запасным, если интерфейс
+    встретит незнакомый ключ после обновления.
+    """
+    with _db_lock, db() as c:
+        c.execute("INSERT INTO log (ts, folder, level, line, key, args) VALUES (?,?,?,?,?,?)",
+                  (now(), folder, level, _RU_LOG.get(key, key).format(**args)[:2000],
+                   key, json.dumps(args, ensure_ascii=False)))
+        c.execute("DELETE FROM log WHERE id < (SELECT MAX(id)-5000 FROM log)")
+
+
 def recent_log(limit: int = 300, folder: str | None = None) -> list[dict]:
-    q = "SELECT ts, folder, level, line FROM log"
+    q = "SELECT ts, folder, level, line, key, args FROM log"
     args: list = []
     if folder:
         q += " WHERE folder = ?"
         args.append(folder)
     q += " ORDER BY id DESC LIMIT ?"
     args.append(limit)
+    out = []
     with _db_lock, db() as c:
-        return [dict(r) for r in c.execute(q, args)]
+        for r in c.execute(q, args):
+            d = dict(r)
+            try:
+                d["args"] = json.loads(d["args"]) if d["args"] else {}
+            except (json.JSONDecodeError, TypeError):
+                d["args"] = {}
+            out.append(d)
+    return out
 
 
 def set_problem(folder: str, vid: str, kind: str, message: str) -> None:
@@ -308,7 +374,7 @@ def _ytdlp_json(args: list[str], folder: str, timeout: int = 600) -> tuple[int, 
     try:
         p = subprocess.run(cmd, capture_output=True, text=True, timeout=timeout)
     except subprocess.TimeoutExpired:
-        log(folder, f"таймаут {timeout} с", "error")
+        logk(folder, "log_timeout", "error", n=timeout)
         return 124, ""
     for line in (p.stderr or "").splitlines():
         if line.strip():
@@ -344,7 +410,7 @@ def _ytdlp_stream(args: list[str], folder: str, on_status=None,
             if datetime.now(timezone.utc).timestamp() > deadline:
                 reason = "timeout"
                 _kill_group(p, signal.SIGKILL)
-                log(folder, f"таймаут {timeout} с", "error")
+                logk(folder, "log_timeout", "error", n=timeout)
                 break
             with _proc_lock:
                 if _ctl["stop"]:
@@ -371,7 +437,7 @@ def _ytdlp_stream(args: list[str], folder: str, on_status=None,
                 done += 1
                 if on_status:
                     on_status({"item": name, "done": done, "percent": 0.0})
-                log(folder, f"качаю: {name}")
+                logk(folder, "log_downloading", name=name)
                 continue
 
             m = ERR_LINE.search(line)
@@ -415,10 +481,9 @@ def _ytdlp_stream(args: list[str], folder: str, on_status=None,
             _proc = None
             _ctl["stop"] = _ctl["pause"] = False
     if reason == "stop":
-        log(folder, "остановлено вручную; недокачанный файл сохранён "
-                    "и продолжится при следующем запуске", "warn")
+        logk(folder, "log_stopped", "warn")
     elif reason == "pause":
-        log(folder, "пауза: текущий файл дописан, остальное отложено", "warn")
+        logk(folder, "log_paused", "warn")
     return (p.returncode or 0), reason
 
 
@@ -435,7 +500,7 @@ def index_playlist(pl: dict) -> tuple[bool, list[dict]]:
     try:
         data = json.loads(out)
     except json.JSONDecodeError:
-        log(pl["folder"], "не удалось разобрать JSON от yt-dlp", "error")
+        logk(pl["folder"], "log_badjson", "error")
         return False, []
 
     folder = pl["folder"]
@@ -453,7 +518,7 @@ def index_playlist(pl: dict) -> tuple[bool, list[dict]]:
             set_problem(folder, vid, "dead", title or avail or "недоступно")
             dead += 1
     if dead:
-        log(folder, f"из них недоступно (удалено/приватно): {dead}", "warn")
+        logk(folder, "log_dead", "warn", n=dead)
     return True, entries
 
 
@@ -481,7 +546,7 @@ def download_playlist(pl: dict, on_status=None) -> tuple[bool, int, str]:
 
     free_ok, why = space_ok()
     if not free_ok:
-        log(folder, why, "error")
+        logk(folder, "log_nospace", "error", free=why["free"], need=why["need"])
         return False, 0, "nospace"
 
     before = downloaded_ids(folder)
@@ -667,8 +732,7 @@ def save_cookies(text: str) -> dict:
     st = cookies_status()
     st["dropped"] = total - len(kept)
     st["dropped_domains"] = sorted(dropped_domains)[:15]
-    log("", f"куки сохранены: оставлено {len(kept)} из {total}"
-            + (f", отброшено посторонних {st['dropped']}" if st["dropped"] else ""))
+    logk("", "log_cookies_saved", kept=len(kept), total=total, dropped=st["dropped"])
     return st
 
 
@@ -678,7 +742,7 @@ def clear_cookies() -> None:
     cfg = load_config()
     cfg["cookies_file"] = ""
     save_config(cfg)
-    log("", "куки удалены")
+    logk("", "log_cookies_cleared")
 
 
 # ------------------------------------------ место, тихие часы, повтор
@@ -701,12 +765,11 @@ def space_ok() -> tuple[bool, str]:
     cfg = load_config()
     need = float(cfg.get("min_free_gb") or 0)
     if need <= 0:
-        return True, ""
+        return True, None
     free = disk_usage().get("free_gb")
     if free is None or free >= need:
-        return True, ""
-    return False, (f"свободно {free} ГБ при пороге {need:g} ГБ — скачивание не начато. "
-                   f"Освободи место или снизь порог в настройках")
+        return True, None
+    return False, {"key": "log_nospace", "free": free, "need": need}
 
 
 def in_quiet_hours() -> bool:
@@ -729,7 +792,7 @@ def retry_lost(pl: dict, video_ids: list[str], on_status=None) -> tuple[bool, in
         return True, 0, ""
     ok, why = space_ok()
     if not ok:
-        log(pl["folder"], why, "error")
+        logk(pl["folder"], "log_nospace", "error", free=why["free"], need=why["need"])
         return False, 0, "nospace"
 
     cfg = load_config()

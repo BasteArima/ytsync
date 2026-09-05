@@ -370,6 +370,27 @@ ru: {
   msg_stopped:"остановлено вручную", msg_paused:"пауза после текущего файла",
   msg_nospace:"не хватает свободного места", msg_timeout:"прервано по таймауту",
   msg_index_failed:"индексация не удалась",
+  log_indexed:"проиндексировано записей: {n}",
+  log_dead:"из них недоступно (удалено или приватно): {n}",
+  log_pending:"к загрузке новых: {n}", log_downloaded:"скачано новых: {n}",
+  log_downloading:"качаю: {name}", log_retry:"перепроверяю упущенных: {n}",
+  log_stopped:"остановлено вручную; недокачанный файл сохранён и продолжится при следующем запуске",
+  log_paused:"пауза: текущий файл дописан, остальное отложено",
+  log_timeout:"таймаут {n} с", log_badjson:"не удалось разобрать ответ yt-dlp",
+  log_index_failed:"индексация не удалась",
+  log_nospace:"свободно {free} ГБ при пороге {need} ГБ — скачивание не начато",
+  log_added_new:"плейлист добавлен; создана папка и пустой archive.txt",
+  log_added_existing:"плейлист добавлен; использую существующий archive.txt ({n} записей)",
+  log_removed:"плейлист убран из конфига, файлы не тронуты",
+  log_unqueued:"снято из очереди: {n}",
+  log_queue_cleared:"очередь очищена после остановки: снято {n}",
+  log_schedule:"расписание {h}:00 — поставлено в очередь: {n}",
+  log_quiet:"тихие часы ({h}:00) — встаю после текущего файла",
+  log_reconciled:"сверка: в archive.txt добавлено записей — {n}",
+  log_cookies_saved:"куки сохранены: оставлено {kept} из {total}, отброшено посторонних {dropped}",
+  log_cookies_cleared:"куки удалены", log_pw_set:"пароль установлен",
+  log_pw_changed:"пароль изменён", log_sessions_revoked:"сессии сброшены на всех устройствах",
+  log_badlogin:"неудачная попытка входа", log_sched_err:"планировщик: {err}",
 },
 en: {
   reindex_all:"Reindex all", sync_all:"Sync all",
@@ -443,6 +464,27 @@ en: {
   msg_stopped:"stopped manually", msg_paused:"paused after current file",
   msg_nospace:"not enough free space", msg_timeout:"aborted on timeout",
   msg_index_failed:"indexing failed",
+  log_indexed:"indexed {n} entries",
+  log_dead:"of those, {n} unavailable (deleted or private)",
+  log_pending:"new to download: {n}", log_downloaded:"downloaded {n} new",
+  log_downloading:"downloading: {name}", log_retry:"rechecking missed: {n}",
+  log_stopped:"stopped manually; the partial file is kept and resumes on the next run",
+  log_paused:"paused: current file finished, the rest is deferred",
+  log_timeout:"timed out after {n}s", log_badjson:"could not parse the yt-dlp response",
+  log_index_failed:"indexing failed",
+  log_nospace:"{free} GB free against a {need} GB threshold — download not started",
+  log_added_new:"playlist added; folder created with an empty archive.txt",
+  log_added_existing:"playlist added; reusing the existing archive.txt ({n} entries)",
+  log_removed:"playlist removed from the config, files untouched",
+  log_unqueued:"removed from the queue: {n}",
+  log_queue_cleared:"queue cleared after the stop: {n} dropped",
+  log_schedule:"schedule {h}:00 — queued: {n}",
+  log_quiet:"quiet hours ({h}:00) — stopping after the current file",
+  log_reconciled:"reconcile: {n} entries appended to archive.txt",
+  log_cookies_saved:"cookies saved: {kept} of {total} kept, {dropped} unrelated dropped",
+  log_cookies_cleared:"cookies deleted", log_pw_set:"password set",
+  log_pw_changed:"password changed", log_sessions_revoked:"sessions revoked on all devices",
+  log_badlogin:"failed sign-in attempt", log_sched_err:"scheduler: {err}",
 }};
 
 let lang = "ru";
@@ -637,7 +679,10 @@ async function refresh() {
      <span class="sep">·</span><span><b>${d.used_pct ?? "?"}%</b> ${t("st_used")}</span>
      ${s.quiet_now ? `<span class="sep">·</span><span class="chip warn">${t("st_quiet")}</span>` : ""}`;
 
-  $("#warn").innerHTML = !s.space_ok ? `<div class="banner">${esc(s.space_warning)}</div>` : "";
+  // Предупреждение о месте тоже приходит ключом, а не готовым текстом
+  const w = s.space_warning;
+  $("#warn").innerHTML = (!s.space_ok && w)
+    ? `<div class="banner">${esc(typeof w === "string" ? w : t(w.key, w))}</div>` : "";
 
   const qchips = r.queue.map(j => `<span class="chip">${esc(j.folder)} · ${esc(j.kind)}
       <button class="sm" data-act="unqueue" data-f="${esc(j.folder)}"
@@ -706,9 +751,14 @@ async function refresh() {
 async function loadLog() {
   try {
     const l = await api("/api/log?limit=250");
-    $("#log").textContent = l.map(x =>
-      `${x.ts.replace("T"," ").replace("+00:00","")} ${x.folder ? "["+x.folder+"] " : ""}${x.line}`
-    ).join("\n") || t("log_empty");
+    // Свои сообщения приходят ключом и параметрами и переводятся здесь.
+    // Вывод yt-dlp и старые записи показываем как есть.
+    $("#log").textContent = l.map(x => {
+      const known = x.key && ((I18N[lang] && I18N[lang][x.key]) || I18N.ru[x.key]);
+      const body = known ? t(x.key, x.args || {}) : x.line;
+      return `${x.ts.replace("T"," ").replace("+00:00","")} ${
+        x.folder ? "[" + x.folder + "] " : ""}${body}`;
+    }).join("\n") || t("log_empty");
   } catch(e) {}
 }
 

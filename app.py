@@ -85,7 +85,7 @@ def auth_setup():
 def auth_login():
     pw = (request.get_json(force=True) or {}).get("password", "")
     if not extras.check_password(pw):
-        core.log("", "неудачная попытка входа", "warn")
+        core.logk("", "log_badlogin", "warn")
         return jsonify({"error": "неверный пароль"}), 401
     return _with_cookie({"ok": True})
 
@@ -173,24 +173,24 @@ def _run_job(job: dict, pl: dict) -> None:
         if kind == "retry":
             ids = job.get("ids") or core.playlist_stats(pl)["lost_ids"]
             status({"stage": "retry", "expected": len(ids)})
-            core.log(folder, f"перепроверяю упущенных: {len(ids)}")
+            core.logk(folder, "log_retry", n=len(ids))
             ok, added, reason = core.retry_lost(pl, ids, on_status=status)
         else:
             status({})
             ok, entries = core.index_playlist(pl)
             if ok:
                 core.store_index(folder, entries)
-                core.log(folder, f"проиндексировано записей: {len(entries)}")
+                core.logk(folder, "log_indexed", n=len(entries))
             else:
                 msg = "msg_index_failed"
-                core.log(folder, msg, "error")
+                core.logk(folder, "log_index_failed", "error")
 
             if ok and kind == "sync":
                 expected = core.pending_count(pl)
                 status({"stage": "download", "expected": expected})
-                core.log(folder, f"к загрузке новых: {expected}")
+                core.logk(folder, "log_pending", n=expected)
                 ok, added, reason = core.download_playlist(pl, on_status=status)
-                core.log(folder, f"скачано новых: {added}")
+                core.logk(folder, "log_downloaded", n=added)
 
         if reason:
             # Отдаём ключ, а не готовый текст: перевод делает интерфейс
@@ -219,7 +219,7 @@ def _run_job(job: dict, pl: dict) -> None:
         with _qlock:
             dropped, _q[:] = len(_q), []
         if dropped:
-            core.log("", f"очередь очищена после остановки: снято {dropped}", "warn")
+            core.logk("", "log_queue_cleared", "warn", n=dropped)
 
 
 def _worker() -> None:
@@ -256,21 +256,20 @@ def _scheduler() -> None:
                 fired.add(key)
                 if len(fired) > 48:
                     fired.clear()
-                core.log("", f"расписание {n.hour}:00 — в очередь: {_enqueue_all('sync')}")
+                core.logk("", "log_schedule", h=n.hour, n=_enqueue_all("sync"))
 
             # Наступили тихие часы во время скачивания — доработать файл и встать
             if core.in_quiet_hours():
                 cur = _snapshot()["current"]
                 if cur and cur.get("stage") in ("download", "retry"):
                     if not quiet_notified:
-                        core.log("", f"тихие часы ({n.hour}:00) — встаю после текущего файла",
-                                 "warn")
+                        core.logk("", "log_quiet", "warn", h=n.hour)
                         quiet_notified = True
                     core.request_pause()
             else:
                 quiet_notified = False
         except Exception as e:                                # noqa: BLE001
-            core.log("", f"планировщик: {e}", "error")
+            core.logk("", "log_sched_err", "error", err=str(e))
         time.sleep(60)
 
 
@@ -354,7 +353,7 @@ def api_queue_clear():
         _q[:] = [j for j in _q if j["folder"] != folder] if folder else []
         removed = before - len(_q)
     if removed:
-        core.log(folder, f"снято из очереди: {removed}")
+        core.logk(folder, "log_unqueued", n=removed)
     return jsonify({"ok": True, "removed": removed, **_snapshot()})
 
 
@@ -394,9 +393,10 @@ def api_add():
         made = core.ensure_folder(folder)
     except OSError as e:
         return jsonify({"error": f"не удалось создать папку: {e}"}), 500
-    core.log(folder, "плейлист добавлен; " + (
-        "создана папка и пустой archive.txt" if made["archive_created"]
-        else f"использую существующий archive.txt ({made['archive_entries']} записей)"))
+    if made["archive_created"]:
+        core.logk(folder, "log_added_new")
+    else:
+        core.logk(folder, "log_added_existing", n=made["archive_entries"])
     _enqueue("index", folder)
     return jsonify({"ok": True, **made})
 
@@ -423,7 +423,7 @@ def api_delete(folder):
     core.save_config(cfg)
     with _qlock:
         _q[:] = [j for j in _q if j["folder"] != folder]
-    core.log(folder, "плейлист убран из конфига (файлы не тронуты)")
+    core.logk(folder, "log_removed")
     return jsonify({"ok": True})
 
 

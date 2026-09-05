@@ -10,6 +10,8 @@
 
 [English](README.md) · [Русский](README.ru.md)
 
+<img src="docs/screenshot-en.png" alt="ytsync dashboard: a playlist syncing with live progress, a queue, and per-playlist counters" width="900">
+
 </div>
 
 ---
@@ -132,8 +134,10 @@ that terminates TLS.
   identifier. That is why the reconciliation wizard asks you to confirm rather
   than deciding on its own.
 - **One download at a time**, deliberately, to stay gentle on slow home servers.
-- **Server-side log lines are currently Russian only.** The interface is fully
-  translated; the diagnostic log is not yet.
+- **The log is translated too.** The server stores a message key and its
+  parameters rather than finished text, so the same entry reads in whichever
+  language you pick. Raw `yt-dlp` output is passed through untouched, and log
+  entries written before this change keep their original wording.
 
 ## Development
 
