@@ -162,7 +162,7 @@ def _run_job(job: dict, pl: dict) -> None:
     kind, folder = job["kind"], job["folder"]
     started = core.now()
     ok, added, msg, reason = False, 0, "", ""
-    cur = {"folder": folder, "kind": kind, "started": started, "stage": "индексация",
+    cur = {"folder": folder, "kind": kind, "started": started, "stage": "index",
            "item": None, "percent": 0.0, "done": 0, "expected": 0}
 
     def status(upd: dict) -> None:
@@ -172,7 +172,7 @@ def _run_job(job: dict, pl: dict) -> None:
     try:
         if kind == "retry":
             ids = job.get("ids") or core.playlist_stats(pl)["lost_ids"]
-            status({"stage": "повтор упущенных", "expected": len(ids)})
+            status({"stage": "retry", "expected": len(ids)})
             core.log(folder, f"перепроверяю упущенных: {len(ids)}")
             ok, added, reason = core.retry_lost(pl, ids, on_status=status)
         else:
@@ -182,24 +182,24 @@ def _run_job(job: dict, pl: dict) -> None:
                 core.store_index(folder, entries)
                 core.log(folder, f"проиндексировано записей: {len(entries)}")
             else:
-                msg = "индексация не удалась"
+                msg = "msg_index_failed"
                 core.log(folder, msg, "error")
 
             if ok and kind == "sync":
                 expected = core.pending_count(pl)
-                status({"stage": "скачивание", "expected": expected})
+                status({"stage": "download", "expected": expected})
                 core.log(folder, f"к загрузке новых: {expected}")
                 ok, added, reason = core.download_playlist(pl, on_status=status)
                 core.log(folder, f"скачано новых: {added}")
 
         if reason:
-            msg = {"stop": "остановлено вручную",
-                   "pause": "пауза после текущего файла",
-                   "nospace": "не хватает свободного места",
-                   "timeout": "прервано по таймауту"}.get(reason, reason)
+            # Отдаём ключ, а не готовый текст: перевод делает интерфейс
+            msg = {"stop": "msg_stopped", "pause": "msg_paused",
+                   "nospace": "msg_nospace",
+                   "timeout": "msg_timeout"}.get(reason, reason)
         # После явной остановки не пересчитываем: «стоп» должен останавливать.
         if kind in ("sync", "retry") and reason != "stop" and ok:
-            status({"stage": "пересчёт", "item": None, "percent": 0.0})
+            status({"stage": "recount", "item": None, "percent": 0.0})
             ok2, entries = core.index_playlist(pl)
             if ok2:
                 core.store_index(folder, entries)
@@ -261,7 +261,7 @@ def _scheduler() -> None:
             # Наступили тихие часы во время скачивания — доработать файл и встать
             if core.in_quiet_hours():
                 cur = _snapshot()["current"]
-                if cur and cur.get("stage") in ("скачивание", "повтор упущенных"):
+                if cur and cur.get("stage") in ("download", "retry"):
                     if not quiet_notified:
                         core.log("", f"тихие часы ({n.hour}:00) — встаю после текущего файла",
                                  "warn")

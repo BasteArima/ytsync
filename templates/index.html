@@ -365,6 +365,11 @@ ru: {
   a_pick_file:"Выбери файл", a_empty:"Пусто",
   e_auth:"нужен вход", e_generic:"ошибка", ago_never:"ни разу", ago_now:"только что",
   ago_min:"{n} мин назад", ago_h:"{n} ч назад", ago_d:"{n} дн назад",
+  stage_index:"индексация", stage_download:"скачивание", stage_recount:"пересчёт",
+  stage_retry:"повтор упущенных",
+  msg_stopped:"остановлено вручную", msg_paused:"пауза после текущего файла",
+  msg_nospace:"не хватает свободного места", msg_timeout:"прервано по таймауту",
+  msg_index_failed:"индексация не удалась",
 },
 en: {
   reindex_all:"Reindex all", sync_all:"Sync all",
@@ -433,6 +438,11 @@ en: {
   a_pick_file:"Pick a file", a_empty:"Empty",
   e_auth:"login required", e_generic:"error", ago_never:"never", ago_now:"just now",
   ago_min:"{n} min ago", ago_h:"{n} h ago", ago_d:"{n} d ago",
+  stage_index:"indexing", stage_download:"downloading", stage_recount:"recounting",
+  stage_retry:"retrying missed",
+  msg_stopped:"stopped manually", msg_paused:"paused after current file",
+  msg_nospace:"not enough free space", msg_timeout:"aborted on timeout",
+  msg_index_failed:"indexing failed",
 }};
 
 let lang = "ru";
@@ -443,6 +453,13 @@ function t(key, vars) {
   let s = (I18N[lang] && I18N[lang][key]) ?? I18N.ru[key] ?? key;
   if (vars) for (const k in vars) s = s.split("{" + k + "}").join(vars[k]);
   return s;
+}
+// Сервер присылает ключи стадий и сообщений, а не готовый текст, чтобы
+// английский интерфейс не показывал русские слова. Незнакомое отдаём как есть.
+function tkey(v, pfx = "") {
+  if (!v) return "";
+  const k = pfx + v;
+  return (I18N[lang] && I18N[lang][k]) || I18N.ru[k] || v;
 }
 function applyStatic() {
   document.documentElement.lang = lang;
@@ -599,7 +616,7 @@ function row(p) {
       <div class="rmeta">${t("meta_checked", {t: ago(p.indexed_at)})}${
         p.last_run && p.last_run.added ? ` · ${t("meta_added", {n:p.last_run.added})}` : ""}${
         p.last_run && p.last_run.message
-          ? ` · <span style="color:var(--bad)">${esc(p.last_run.message)}</span>` : ""}</div>
+          ? ` · <span style="color:var(--bad)">${esc(tkey(p.last_run.message))}</span>` : ""}</div>
       ${det ? `<div class="rdet">${det}</div>` : ""}
     </div>
   </div>`;
@@ -627,7 +644,8 @@ async function refresh() {
       style="padding:0 4px;border:0;background:none">✕</button></span>`).join("");
   $("#runbar").innerHTML = cur ? `<div class="runbar">
       <div class="runtop">
-        <span class="chip run"><i class="pulse"></i>${esc(cur.stage || cur.kind)}</span>
+        <span class="chip run"><i class="pulse"></i>${
+          esc(tkey(cur.stage, "stage_") || cur.kind)}</span>
         <b>${esc(cur.folder)}</b>
         ${cur.expected ? `<span class="mono" style="font-size:13px">${
           t("file_of", {a: cur.done || 0, b: cur.expected})}</span>` : ""}
