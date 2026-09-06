@@ -11,8 +11,10 @@ import re
 import shlex
 import signal
 import sqlite3
+import stat as stat_module
 import subprocess
 import threading
+import time
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -317,21 +319,62 @@ def archive_ids(folder: str) -> set[str]:
     return out
 
 
-def file_ids(folder: str) -> tuple[set[str], int, int]:
+# Обход каталога — самая дорогая часть сводки, а морда опрашивает состояние
+# раз в две секунды. Без кэша это давало почти 3% ядра впустую на одних только
+# stat-ах. Держим короткий TTL: числа отстают максимум на несколько секунд,
+# а ход текущей загрузки показывается отдельно и от кэша не зависит.
+SCAN_TTL = 10.0
+_scan_cache: dict[str, tuple[float, dict]] = {}
+_scan_lock = threading.Lock()
+
+
+def scan_folder(folder: str, fresh: bool = False) -> dict:
+    """Один обход вместо двух: сразу и ID, и счётчики, и средний размер."""
+    ts = time.monotonic()
+    if not fresh:
+        with _scan_lock:
+            hit = _scan_cache.get(folder)
+            if hit and ts - hit[0] < SCAN_TTL:
+                return hit[1]
+
     d = folder_path(folder)
-    ids, total, without = set(), 0, 0
-    if not d.is_dir():
-        return ids, 0, 0
-    for f in d.rglob("*"):
-        if not f.is_file() or f.suffix.lower() not in VIDEO_EXT:
-            continue
-        total += 1
-        m = ID_IN_NAME.search(f.name)
-        if m:
-            ids.add(m.group(1))
+    ids, total, without, size_sum = set(), 0, 0, 0
+    if d.is_dir():
+        for f in d.rglob("*"):
+            if f.suffix.lower() not in VIDEO_EXT:
+                continue
+            try:
+                st = f.stat()
+            except OSError:
+                continue
+            if not stat_module.S_ISREG(st.st_mode):
+                continue
+            total += 1
+            size_sum += st.st_size
+            m = ID_IN_NAME.search(f.name)
+            if m:
+                ids.add(m.group(1))
+            else:
+                without += 1
+    res = {"ids": ids, "total": total, "without": without,
+           "avg": (size_sum / total) if total else 0.0}
+    with _scan_lock:
+        _scan_cache[folder] = (time.monotonic(), res)
+    return res
+
+
+def invalidate_scan(folder: str | None = None) -> None:
+    """Сбросить кэш после скачивания, чтобы счётчики обновились сразу."""
+    with _scan_lock:
+        if folder is None:
+            _scan_cache.clear()
         else:
-            without += 1
-    return ids, total, without
+            _scan_cache.pop(folder, None)
+
+
+def file_ids(folder: str) -> tuple[set[str], int, int]:
+    s = scan_folder(folder)
+    return s["ids"], s["total"], s["without"]
 
 
 def files_without_id(folder: str) -> list[str]:
@@ -583,6 +626,8 @@ def download_playlist(pl: dict, on_status=None) -> tuple[bool, int, str]:
     args.append(pl["url"])
 
     rc, reason = _ytdlp_stream(args, folder, on_status)
+    # Файлы только что появились — считать разницу по кэшу нельзя
+    invalidate_scan(folder)
     added = len(downloaded_ids(folder) - before)
     # rc != 0 при --ignore-errors значит "часть видео не удалась", а не полный провал.
     # Ручная остановка провалом тоже не считается.
@@ -759,14 +804,10 @@ def folder_avg_size(folder: str) -> float:
     """Средний размер уже скачанного видео в этой папке, байт.
 
     Нужен для прикидки «98 в очереди ≈ 48 ГБ». Сеть не трогаем: спрашивать
-    у YouTube размер каждого ролика долго и незачем.
+    у YouTube размер каждого ролика долго и незачем. Берётся из того же
+    обхода каталога, что и счётчики, — отдельный проход не нужен.
     """
-    d = folder_path(folder)
-    if not d.is_dir():
-        return 0.0
-    sizes = [f.stat().st_size for f in d.rglob("*")
-             if f.is_file() and f.suffix.lower() in VIDEO_EXT]
-    return (sum(sizes) / len(sizes)) if sizes else 0.0
+    return scan_folder(folder)["avg"]
 
 
 def space_ok() -> tuple[bool, str]:
@@ -832,5 +873,6 @@ def retry_lost(pl: dict, video_ids: list[str], on_status=None) -> tuple[bool, in
     args += [f"https://www.youtube.com/watch?v={v}" for v in video_ids]
 
     rc, reason = _ytdlp_stream(args, folder, on_status)
+    invalidate_scan(folder)
     added = len(downloaded_ids(folder) - before)
     return (reason in ("stop", "pause") or rc in (0, 1)), added, reason
