@@ -504,7 +504,11 @@ def index_playlist(pl: dict) -> tuple[bool, list[dict]]:
         return False, []
 
     folder = pl["folder"]
-    clear_problems(folder, "dead")
+    # Чистим только свои метки. Метки, полученные при попытке скачивания
+    # ("dead"/"error"), трогать нельзя: в списке плейлиста такие видео
+    # выглядят совершенно здоровыми, и стерев их, мы вернули бы недоступное
+    # обратно в очередь на скачивание.
+    clear_problems(folder, "ghost")
     entries, dead = [], 0
     for i, e in enumerate(data.get("entries") or [], start=1):
         vid = e.get("id")
@@ -515,7 +519,7 @@ def index_playlist(pl: dict) -> tuple[bool, list[dict]]:
         avail = (e.get("availability") or "").lower()
         if title.strip().lower() in DEAD_TITLES or avail in ("private", "unavailable"):
             # YouTube оставляет удалённые видео в плейлисте как записи-призраки
-            set_problem(folder, vid, "dead", title or avail or "недоступно")
+            set_problem(folder, vid, "ghost", title or avail or "недоступно")
             dead += 1
     if dead:
         logk(folder, "log_dead", "warn", n=dead)
@@ -550,7 +554,11 @@ def download_playlist(pl: dict, on_status=None) -> tuple[bool, int, str]:
         return False, 0, "nospace"
 
     before = downloaded_ids(folder)
+    # Скачивание заново пробует всё нескачанное, поэтому сбрасываем обе свои
+    # метки: и отказы формата, и недоступность. Метки индексации ("ghost")
+    # остаются — их обновляет сама индексация.
     clear_problems(folder, "error")
+    clear_problems(folder, "dead")
     args = [
         "--download-archive", str(archive_path(folder)),
         "--paths", str(dest),
